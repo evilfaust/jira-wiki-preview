@@ -1,0 +1,279 @@
+{
+  "name": "jira-wiki-preview",
+  "displayName": "Jira Wiki Markup — Editor & Preview",
+  "description": "Подсветка синтаксиса Jira Wiki Markup и живое превью в стиле Jira — как у Markdown, только для Jira.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Formatters",
+    "Other"
+  ],
+  "keywords": [
+    "jira",
+    "confluence",
+    "wiki markup",
+    "preview"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "languages": [
+      {
+        "id": "jira",
+        "aliases": [
+          "Jira Wiki Markup",
+          "jira"
+        ],
+        "extensions": [
+          ".jira",
+          ".jira.txt",
+          ".jirawiki"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./media/icons/jira-file.svg",
+          "dark": "./media/icons/jira-file.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "jira",
+        "scopeName": "text.jira",
+        "path": "./syntaxes/jira.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "jira",
+        "path": "./snippets/jira.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "jira.showPreviewToSide",
+        "title": "Открыть превью сбоку",
+        "category": "Jira",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "jira.showPreview",
+        "title": "Открыть превью",
+        "category": "Jira",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "jira.newDocument",
+        "title": "Новый Jira-документ (черновик)",
+        "category": "Jira",
+        "icon": "$(new-file)"
+      },
+      {
+        "command": "jira.copySource",
+        "title": "Скопировать исходник в буфер обмена",
+        "category": "Jira"
+      },
+      {
+        "command": "jira.toggleBold",
+        "title": "Жирный",
+        "category": "Jira"
+      },
+      {
+        "command": "jira.toggleItalic",
+        "title": "Курсив",
+        "category": "Jira"
+      },
+      {
+        "command": "jira.toggleMonospace",
+        "title": "Моноширинный",
+        "category": "Jira"
+      },
+      {
+        "command": "jira.toggleStrikethrough",
+        "title": "Зачёркнутый",
+        "category": "Jira"
+      },
+      {
+        "command": "jira.insertLink",
+        "title": "Вставить ссылку",
+        "category": "Jira"
+      },
+      {
+        "command": "jira.insertCodeBlock",
+        "title": "Вставить блок кода",
+        "category": "Jira"
+      },
+      {
+        "command": "jira.insertTable",
+        "title": "Вставить таблицу",
+        "category": "Jira"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "jira.showPreviewToSide",
+          "when": "editorLangId == jira && !notebookEditorFocused",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "jira.showPreviewToSide",
+          "when": "editorLangId == jira",
+          "group": "jira@1"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "jira.toggleBold",
+          "when": "editorLangId == jira"
+        },
+        {
+          "command": "jira.toggleItalic",
+          "when": "editorLangId == jira"
+        },
+        {
+          "command": "jira.toggleMonospace",
+          "when": "editorLangId == jira"
+        },
+        {
+          "command": "jira.toggleStrikethrough",
+          "when": "editorLangId == jira"
+        },
+        {
+          "command": "jira.insertLink",
+          "when": "editorLangId == jira"
+        },
+        {
+          "command": "jira.insertCodeBlock",
+          "when": "editorLangId == jira"
+        },
+        {
+          "command": "jira.insertTable",
+          "when": "editorLangId == jira"
+        },
+        {
+          "command": "jira.copySource",
+          "when": "editorLangId == jira"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "jira.showPreviewToSide",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "editorLangId == jira"
+      },
+      {
+        "command": "jira.toggleBold",
+        "key": "ctrl+b",
+        "mac": "cmd+b",
+        "when": "editorTextFocus && editorLangId == jira"
+      },
+      {
+        "command": "jira.toggleItalic",
+        "key": "ctrl+i",
+        "mac": "cmd+i",
+        "when": "editorTextFocus && editorLangId == jira"
+      },
+      {
+        "command": "jira.toggleMonospace",
+        "key": "ctrl+shift+m",
+        "mac": "cmd+shift+m",
+        "when": "editorTextFocus && editorLangId == jira"
+      },
+      {
+        "command": "jira.insertLink",
+        "key": "ctrl+k",
+        "mac": "cmd+k",
+        "when": "editorTextFocus && editorLangId == jira"
+      }
+    ],
+    "configuration": {
+      "title": "Jira Wiki Markup",
+      "properties": {
+        "jira.preview.theme": {
+          "type": "string",
+          "enum": [
+            "jira",
+            "editor"
+          ],
+          "enumDescriptions": [
+            "Цвета как в интерфейсе Jira (светлая/тёмная в зависимости от темы VS Code)",
+            "Цвета текущей темы VS Code"
+          ],
+          "default": "jira",
+          "description": "Оформление панели превью."
+        },
+        "jira.preview.fontSize": {
+          "type": "number",
+          "default": 14,
+          "minimum": 8,
+          "maximum": 40,
+          "description": "Размер шрифта в превью (px)."
+        },
+        "jira.preview.fontFamily": {
+          "type": "string",
+          "default": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+          "description": "Шрифт текста в превью."
+        },
+        "jira.preview.maxWidth": {
+          "type": "number",
+          "default": 0,
+          "description": "Максимальная ширина колонки текста в превью в px. 0 — без ограничения."
+        },
+        "jira.preview.scrollPreviewWithEditor": {
+          "type": "boolean",
+          "default": true,
+          "description": "Синхронизировать скролл превью со скроллом редактора."
+        },
+        "jira.preview.scrollEditorWithPreview": {
+          "type": "boolean",
+          "default": true,
+          "description": "Синхронизировать скролл редактора со скроллом превью."
+        },
+        "jira.preview.doubleClickToSwitchToEditor": {
+          "type": "boolean",
+          "default": true,
+          "description": "Двойной клик в превью переводит курсор на соответствующую строку в редакторе."
+        },
+        "jira.preview.highlightCode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Подсвечивать синтаксис внутри блоков {code:язык}. Без указания языка код показывается без подсветки."
+        },
+        "jira.baseUrl": {
+          "type": "string",
+          "default": "",
+          "description": "Базовый URL вашего Jira (например https://company.atlassian.net). Используется для ссылок на задачи вида ABC-123 и упоминаний [~user]."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "grammar": "node scripts/gen-grammar.js",
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "package": "node esbuild.js --production",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types test/*.test.ts",
+    "vsix": "npm run package && vsce package --no-dependencies --allow-missing-repository"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.2.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.0"
+  },
+  "dependencies": {
+    "highlight.js": "^11.11.1"
+  }
+}

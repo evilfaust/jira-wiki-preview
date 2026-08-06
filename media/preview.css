@@ -1,0 +1,550 @@
+:root {
+  --jira-font-size: 14px;
+  --jira-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  --jira-mono-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
+    monospace;
+  --jira-max-width: none;
+}
+
+/* --- Палитра: оформление «как в Jira» --------------------------------- */
+body.theme-jira {
+  --jira-bg: #ffffff;
+  --jira-fg: #172b4d;
+  --jira-subtle: #6b778c;
+  --jira-link: #0052cc;
+  --jira-border: #dfe1e6;
+  --jira-code-bg: #f4f5f7;
+  --jira-code-fg: #172b4d;
+  --jira-header-bg: #f4f5f7;
+  --jira-panel-bg: #ffffff;
+  --jira-quote-bg: #f4f5f7;
+  --jira-info-bg: #deebff;
+  --jira-info-border: #0065ff;
+  --jira-note-bg: #fffae6;
+  --jira-note-border: #ff8b00;
+  --jira-tip-bg: #e3fcef;
+  --jira-tip-border: #00875a;
+  --jira-warning-bg: #ffebe6;
+  --jira-warning-border: #de350b;
+}
+
+body.theme-jira.vscode-dark,
+body.theme-jira.vscode-high-contrast:not(.vscode-high-contrast-light) {
+  --jira-bg: #1d2125;
+  --jira-fg: #b6c2cf;
+  --jira-subtle: #9fadbc;
+  --jira-link: #579dff;
+  --jira-border: #38414a;
+  --jira-code-bg: #22272b;
+  --jira-code-fg: #c7d1db;
+  --jira-header-bg: #282e33;
+  --jira-panel-bg: #22272b;
+  --jira-quote-bg: #22272b;
+  --jira-info-bg: #1c2b41;
+  --jira-info-border: #579dff;
+  --jira-note-bg: #3d3011;
+  --jira-note-border: #e2b203;
+  --jira-tip-bg: #143326;
+  --jira-tip-border: #4bce97;
+  --jira-warning-bg: #42221f;
+  --jira-warning-border: #f87168;
+}
+
+/* --- Палитра: цвета текущей темы VS Code ------------------------------ */
+body.theme-editor {
+  --jira-bg: var(--vscode-editor-background);
+  --jira-fg: var(--vscode-editor-foreground);
+  --jira-subtle: var(--vscode-descriptionForeground);
+  --jira-link: var(--vscode-textLink-foreground);
+  --jira-border: var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
+  --jira-code-bg: var(--vscode-textCodeBlock-background, rgba(128, 128, 128, 0.15));
+  --jira-code-fg: var(--vscode-editor-foreground);
+  --jira-header-bg: var(--vscode-editorWidget-background, rgba(128, 128, 128, 0.1));
+  --jira-panel-bg: var(--vscode-editorWidget-background, transparent);
+  --jira-quote-bg: var(--vscode-textBlockQuote-background, rgba(128, 128, 128, 0.1));
+  --jira-info-bg: rgba(0, 122, 204, 0.12);
+  --jira-info-border: var(--vscode-charts-blue, #3794ff);
+  --jira-note-bg: rgba(255, 180, 0, 0.12);
+  --jira-note-border: var(--vscode-charts-yellow, #e2b203);
+  --jira-tip-bg: rgba(0, 160, 100, 0.12);
+  --jira-tip-border: var(--vscode-charts-green, #4bce97);
+  --jira-warning-bg: rgba(220, 60, 40, 0.12);
+  --jira-warning-border: var(--vscode-charts-red, #f87168);
+}
+
+body {
+  margin: 0;
+  padding: 20px 26px 60vh;
+  background: var(--jira-bg);
+  color: var(--jira-fg);
+  font-family: var(--jira-font-family);
+  font-size: var(--jira-font-size);
+  line-height: 1.714;
+  overflow-wrap: break-word;
+}
+
+.jira-content {
+  max-width: var(--jira-max-width);
+}
+
+.jira-placeholder,
+.jira-error {
+  color: var(--jira-subtle);
+}
+
+.jira-error {
+  color: var(--jira-warning-border);
+}
+
+/* --- Базовая типографика --------------------------------------------- */
+p {
+  margin: 0 0 12px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--jira-fg);
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 24px 0 8px;
+}
+
+h1 {
+  font-size: 1.714em;
+  font-weight: 500;
+}
+h2 {
+  font-size: 1.43em;
+  font-weight: 500;
+}
+h3 {
+  font-size: 1.143em;
+}
+h4 {
+  font-size: 1em;
+}
+h5 {
+  font-size: 0.857em;
+  text-transform: uppercase;
+  color: var(--jira-subtle);
+}
+h6 {
+  font-size: 0.786em;
+  text-transform: uppercase;
+  color: var(--jira-subtle);
+}
+
+.jira-content > *:first-child {
+  margin-top: 0;
+}
+
+a {
+  color: var(--jira-link);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--jira-border);
+  margin: 20px 0;
+}
+
+del {
+  opacity: 0.75;
+}
+
+ins {
+  text-decoration: underline;
+}
+
+cite {
+  font-style: italic;
+  color: var(--jira-subtle);
+}
+
+sub,
+sup {
+  font-size: 0.75em;
+  line-height: 0;
+}
+
+/* --- Списки ----------------------------------------------------------- */
+ul,
+ol {
+  margin: 0 0 12px;
+  padding-left: 26px;
+}
+
+li > ul,
+li > ol {
+  margin-bottom: 0;
+}
+
+ul.jira-dash-list {
+  list-style-type: '–  ';
+}
+
+/* --- Моноширинный текст и код ---------------------------------------- */
+code.jira-mono {
+  font-family: var(--jira-mono-family);
+  font-size: 0.857em;
+  background: var(--jira-code-bg);
+  color: var(--jira-code-fg);
+  border: 1px solid var(--jira-border);
+  border-radius: 3px;
+  padding: 1px 4px;
+}
+
+.jira-code {
+  margin: 0 0 12px;
+  border: 1px solid var(--jira-border);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--jira-code-bg);
+}
+
+.jira-code-title {
+  padding: 6px 10px;
+  font-weight: 600;
+  font-size: 0.929em;
+  background: var(--jira-header-bg);
+  border-bottom: 1px solid var(--jira-border);
+}
+
+pre.jira-code-body {
+  margin: 0;
+  padding: 10px 12px;
+  overflow-x: auto;
+}
+
+code.jira-code-content {
+  font-family: var(--jira-mono-family);
+  font-size: 0.857em;
+  line-height: 1.5;
+  color: var(--jira-code-fg);
+  white-space: pre;
+}
+
+/* --- Подсветка кода (highlight.js) ------------------------------------ */
+/* Палитра близка к Light+ / Dark+ из VS Code — привычна и читаема в обеих темах. */
+body {
+  --hl-comment: #008000;
+  --hl-keyword: #0000ff;
+  --hl-control: #af00db;
+  --hl-string: #a31515;
+  --hl-number: #098658;
+  --hl-function: #795e26;
+  --hl-type: #267f99;
+  --hl-variable: #001080;
+  --hl-attr: #e50000;
+  --hl-tag: #800000;
+  --hl-meta: #808080;
+  --hl-regexp: #811f3f;
+  --hl-addition: #22863a;
+  --hl-deletion: #b31d28;
+}
+
+body.vscode-dark,
+body.vscode-high-contrast:not(.vscode-high-contrast-light) {
+  --hl-comment: #6a9955;
+  --hl-keyword: #569cd6;
+  --hl-control: #c586c0;
+  --hl-string: #ce9178;
+  --hl-number: #b5cea8;
+  --hl-function: #dcdcaa;
+  --hl-type: #4ec9b0;
+  --hl-variable: #9cdcfe;
+  --hl-attr: #9cdcfe;
+  --hl-tag: #569cd6;
+  --hl-meta: #9b9b9b;
+  --hl-regexp: #d16969;
+  --hl-addition: #b5cea8;
+  --hl-deletion: #f48771;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: var(--hl-comment);
+  font-style: italic;
+}
+
+.hljs-doctag {
+  color: var(--hl-comment);
+}
+
+.hljs-keyword,
+.hljs-literal,
+.hljs-selector-tag,
+.hljs-name,
+.hljs-tag {
+  color: var(--hl-keyword);
+}
+
+.hljs-keyword.hljs-control,
+.hljs-meta .hljs-keyword,
+.hljs-subst {
+  color: var(--hl-control);
+}
+
+.hljs-string,
+.hljs-char,
+.hljs-char.escape_,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-selector-pseudo {
+  color: var(--hl-string);
+}
+
+.hljs-regexp,
+.hljs-template-tag {
+  color: var(--hl-regexp);
+}
+
+.hljs-number {
+  color: var(--hl-number);
+}
+
+.hljs-title,
+.hljs-title.function_,
+.hljs-section {
+  color: var(--hl-function);
+}
+
+.hljs-built_in,
+.hljs-type,
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-selector-class {
+  color: var(--hl-type);
+}
+
+.hljs-variable,
+.hljs-variable.language_,
+.hljs-template-variable,
+.hljs-params,
+.hljs-property,
+.hljs-selector-id,
+.hljs-selector-attr {
+  color: var(--hl-variable);
+}
+
+.hljs-attr,
+.hljs-attribute {
+  color: var(--hl-attr);
+}
+
+.hljs-meta,
+.hljs-meta .hljs-string {
+  color: var(--hl-meta);
+}
+
+.hljs-addition {
+  color: var(--hl-addition);
+}
+
+.hljs-deletion {
+  color: var(--hl-deletion);
+}
+
+.hljs-link {
+  text-decoration: underline;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: 600;
+}
+
+/* --- Цитаты ----------------------------------------------------------- */
+blockquote.jira-quote {
+  margin: 0 0 12px;
+  padding: 8px 14px;
+  border-left: 3px solid var(--jira-border);
+  background: var(--jira-quote-bg);
+  color: var(--jira-fg);
+}
+
+blockquote.jira-quote > *:last-child {
+  margin-bottom: 0;
+}
+
+/* --- Панели и макросы-сообщения --------------------------------------- */
+.jira-panel {
+  margin: 0 0 12px;
+  border: 1px solid var(--jira-border);
+  border-style: solid;
+  border-radius: 3px;
+  background: var(--jira-panel-bg);
+}
+
+.jira-panel-title {
+  padding: 6px 12px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--jira-border);
+  background: var(--jira-header-bg);
+}
+
+.jira-panel-body {
+  padding: 10px 12px;
+}
+
+.jira-panel-body > *:last-child,
+.jira-msg-content > *:last-child {
+  margin-bottom: 0;
+}
+
+.jira-msg {
+  display: flex;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 3px;
+  border-left: 3px solid var(--jira-border);
+}
+
+.jira-msg-icon {
+  flex: 0 0 auto;
+  line-height: 1.6;
+}
+
+.jira-msg-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.jira-msg-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.jira-msg-info {
+  background: var(--jira-info-bg);
+  border-left-color: var(--jira-info-border);
+}
+.jira-msg-note {
+  background: var(--jira-note-bg);
+  border-left-color: var(--jira-note-border);
+}
+.jira-msg-tip {
+  background: var(--jira-tip-bg);
+  border-left-color: var(--jira-tip-border);
+}
+.jira-msg-warning {
+  background: var(--jira-warning-bg);
+  border-left-color: var(--jira-warning-border);
+}
+
+/* --- Таблицы ---------------------------------------------------------- */
+.jira-table-wrap {
+  margin: 0 0 14px;
+  overflow-x: auto;
+}
+
+table.jira-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table.jira-table th,
+table.jira-table td {
+  border: 1px solid var(--jira-border);
+  padding: 7px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+table.jira-table th {
+  background: var(--jira-header-bg);
+  font-weight: 600;
+}
+
+/* --- Прочие элементы -------------------------------------------------- */
+.jira-status {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 3px;
+  font-size: 0.786em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  line-height: 1.7;
+  color: #fff;
+  background: #6b778c;
+  vertical-align: middle;
+}
+
+.jira-status-green {
+  background: #00875a;
+}
+.jira-status-yellow {
+  background: #ff991f;
+}
+.jira-status-red {
+  background: #de350b;
+}
+.jira-status-blue {
+  background: #0052cc;
+}
+.jira-status-purple {
+  background: #5243aa;
+}
+.jira-status-grey {
+  background: #6b778c;
+}
+
+.jira-mention {
+  color: var(--jira-link);
+  background: var(--jira-code-bg);
+  border-radius: 3px;
+  padding: 0 3px;
+}
+
+.jira-attachment,
+.jira-link-unresolved {
+  color: var(--jira-subtle);
+  border-bottom: 1px dotted var(--jira-border);
+}
+
+.jira-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 3px;
+}
+
+.jira-image.jira-thumbnail {
+  max-width: 200px;
+  border: 1px solid var(--jira-border);
+}
+
+.jira-image-missing {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px dashed var(--jira-border);
+  border-radius: 3px;
+  color: var(--jira-subtle);
+  font-size: 0.929em;
+}
+
+.jira-emoticon {
+  font-style: normal;
+}
+
+.jira-anchor {
+  scroll-margin-top: 20px;
+}
+
+.jira-line {
+  display: inline;
+}

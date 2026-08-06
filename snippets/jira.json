@@ -1,0 +1,116 @@
+{
+  "Заголовок h1": {
+    "prefix": "h1",
+    "body": ["h1. $1", "$0"],
+    "description": "Заголовок первого уровня"
+  },
+  "Заголовок h2": {
+    "prefix": "h2",
+    "body": ["h2. $1", "$0"],
+    "description": "Заголовок второго уровня"
+  },
+  "Заголовок h3": {
+    "prefix": "h3",
+    "body": ["h3. $1", "$0"],
+    "description": "Заголовок третьего уровня"
+  },
+  "Блок кода": {
+    "prefix": "code",
+    "body": ["{code:${1|java,javascript,typescript,json,xml,sql,python,bash,yaml,none|}}", "$0", "{code}"],
+    "description": "Блок кода с подсветкой"
+  },
+  "Блок кода с заголовком": {
+    "prefix": "codetitle",
+    "body": ["{code:${1:java}|title=${2:Название}|borderStyle=solid}", "$0", "{code}"],
+    "description": "Блок кода с заголовком"
+  },
+  "Без форматирования": {
+    "prefix": "noformat",
+    "body": ["{noformat}", "$0", "{noformat}"],
+    "description": "Текст без форматирования"
+  },
+  "Цитата (блок)": {
+    "prefix": "quote",
+    "body": ["{quote}", "$0", "{quote}"],
+    "description": "Блочная цитата"
+  },
+  "Панель": {
+    "prefix": "panel",
+    "body": ["{panel:title=${1:Заголовок}}", "$0", "{panel}"],
+    "description": "Панель с заголовком"
+  },
+  "Информация": {
+    "prefix": "info",
+    "body": ["{info:title=${1:Инфо}}", "$0", "{info}"],
+    "description": "Синий блок с информацией"
+  },
+  "Заметка": {
+    "prefix": "note",
+    "body": ["{note}", "$0", "{note}"],
+    "description": "Жёлтый блок-заметка"
+  },
+  "Подсказка": {
+    "prefix": "tip",
+    "body": ["{tip}", "$0", "{tip}"],
+    "description": "Зелёный блок-подсказка"
+  },
+  "Предупреждение": {
+    "prefix": "warning",
+    "body": ["{warning}", "$0", "{warning}"],
+    "description": "Красный блок-предупреждение"
+  },
+  "Таблица": {
+    "prefix": "table",
+    "body": [
+      "||${1:Заголовок 1}||${2:Заголовок 2}||${3:Заголовок 3}||",
+      "|${4:ячейка}|${5:ячейка}|${6:ячейка}|",
+      "$0"
+    ],
+    "description": "Таблица 3×2"
+  },
+  "Ссылка": {
+    "prefix": "link",
+    "body": ["[${1:текст}|${2:https://}]$0"],
+    "description": "Ссылка с подписью"
+  },
+  "Упоминание пользователя": {
+    "prefix": "mention",
+    "body": ["[~${1:username}]$0"],
+    "description": "Упоминание пользователя"
+  },
+  "Картинка": {
+    "prefix": "image",
+    "body": ["!${1:image.png}${2:|thumbnail}!$0"],
+    "description": "Вставка изображения"
+  },
+  "Цветной текст": {
+    "prefix": "color",
+    "body": ["{color:${1|red,green,blue,orange,purple,#172B4D|}}${2:текст}{color}$0"],
+    "description": "Текст заданного цвета"
+  },
+  "Статус": {
+    "prefix": "status",
+    "body": ["{status:colour=${1|Green,Yellow,Red,Blue,Grey|}|title=${2:Готово}}$0"],
+    "description": "Цветной бейдж статуса"
+  },
+  "Маркированный список": {
+    "prefix": "ul",
+    "body": ["* ${1:пункт}", "* ${2:пункт}", "$0"],
+    "description": "Маркированный список"
+  },
+  "Нумерованный список": {
+    "prefix": "ol",
+    "body": ["# ${1:пункт}", "# ${2:пункт}", "$0"],
+    "description": "Нумерованный список"
+  },
+  "Разделитель": {
+    "prefix": "hr",
+    "body": ["----", "$0"],
+    "description": "Горизонтальная линия"
+  },
+  "Якорь": {
+    "prefix": "anchor",
+    "body": ["{anchor:${1:имя}}$0"],
+    "description": "Якорь для ссылок внутри страницы"
+  }
+}

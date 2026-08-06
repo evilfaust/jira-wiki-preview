@@ -1,0 +1,1085 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Jira Wiki Markup",
+  "scopeName": "text.jira",
+  "patterns": [
+    {
+      "include": "#code-java"
+    },
+    {
+      "include": "#code-javascript"
+    },
+    {
+      "include": "#code-typescript"
+    },
+    {
+      "include": "#code-json"
+    },
+    {
+      "include": "#code-xml"
+    },
+    {
+      "include": "#code-html"
+    },
+    {
+      "include": "#code-sql"
+    },
+    {
+      "include": "#code-python"
+    },
+    {
+      "include": "#code-shell"
+    },
+    {
+      "include": "#code-yaml"
+    },
+    {
+      "include": "#code-css"
+    },
+    {
+      "include": "#code-go"
+    },
+    {
+      "include": "#code-php"
+    },
+    {
+      "include": "#code-ruby"
+    },
+    {
+      "include": "#code-csharp"
+    },
+    {
+      "include": "#code-groovy"
+    },
+    {
+      "include": "#code-generic"
+    },
+    {
+      "include": "#noformat"
+    },
+    {
+      "include": "#heading"
+    },
+    {
+      "include": "#thematic-break"
+    },
+    {
+      "include": "#blockquote-line"
+    },
+    {
+      "include": "#table"
+    },
+    {
+      "include": "#list"
+    },
+    {
+      "include": "#inline"
+    }
+  ],
+  "repository": {
+    "code-java": {
+      "name": "markup.raw.block.jira meta.embedded.block.java",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:java))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.java",
+      "patterns": [
+        {
+          "include": "source.java"
+        }
+      ]
+    },
+    "code-javascript": {
+      "name": "markup.raw.block.jira meta.embedded.block.javascript",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:javascript|js|node))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.javascript",
+      "patterns": [
+        {
+          "include": "source.js"
+        }
+      ]
+    },
+    "code-typescript": {
+      "name": "markup.raw.block.jira meta.embedded.block.typescript",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:typescript|ts))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.typescript",
+      "patterns": [
+        {
+          "include": "source.ts"
+        }
+      ]
+    },
+    "code-json": {
+      "name": "markup.raw.block.jira meta.embedded.block.json",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:json))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.json",
+      "patterns": [
+        {
+          "include": "source.json"
+        }
+      ]
+    },
+    "code-xml": {
+      "name": "markup.raw.block.jira meta.embedded.block.xml",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:xml))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.xml",
+      "patterns": [
+        {
+          "include": "text.xml"
+        }
+      ]
+    },
+    "code-html": {
+      "name": "markup.raw.block.jira meta.embedded.block.html",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:html))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.html",
+      "patterns": [
+        {
+          "include": "text.html.basic"
+        }
+      ]
+    },
+    "code-sql": {
+      "name": "markup.raw.block.jira meta.embedded.block.sql",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:sql))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.sql",
+      "patterns": [
+        {
+          "include": "source.sql"
+        }
+      ]
+    },
+    "code-python": {
+      "name": "markup.raw.block.jira meta.embedded.block.python",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:python|py))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.python",
+      "patterns": [
+        {
+          "include": "source.python"
+        }
+      ]
+    },
+    "code-shell": {
+      "name": "markup.raw.block.jira meta.embedded.block.shell",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:bash|shell|sh))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.shell",
+      "patterns": [
+        {
+          "include": "source.shell"
+        }
+      ]
+    },
+    "code-yaml": {
+      "name": "markup.raw.block.jira meta.embedded.block.yaml",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:yaml|yml))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.yaml",
+      "patterns": [
+        {
+          "include": "source.yaml"
+        }
+      ]
+    },
+    "code-css": {
+      "name": "markup.raw.block.jira meta.embedded.block.css",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:css))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.css",
+      "patterns": [
+        {
+          "include": "source.css"
+        }
+      ]
+    },
+    "code-go": {
+      "name": "markup.raw.block.jira meta.embedded.block.go",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:go|golang))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.go",
+      "patterns": [
+        {
+          "include": "source.go"
+        }
+      ]
+    },
+    "code-php": {
+      "name": "markup.raw.block.jira meta.embedded.block.php",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:php))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.php",
+      "patterns": [
+        {
+          "include": "source.php"
+        }
+      ]
+    },
+    "code-ruby": {
+      "name": "markup.raw.block.jira meta.embedded.block.ruby",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:ruby|rb))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.ruby",
+      "patterns": [
+        {
+          "include": "source.ruby"
+        }
+      ]
+    },
+    "code-csharp": {
+      "name": "markup.raw.block.jira meta.embedded.block.csharp",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:csharp|c#))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.csharp",
+      "patterns": [
+        {
+          "include": "source.cs"
+        }
+      ]
+    },
+    "code-groovy": {
+      "name": "markup.raw.block.jira meta.embedded.block.groovy",
+      "begin": "^\\s*(\\{)(code)(:)((?:[^}\\n]*\\|)?(?:language=)?(?:groovy))((?:\\|[^}\\n]*)?)(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "variable.parameter.jira"
+        },
+        "6": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "meta.embedded.block.groovy",
+      "patterns": [
+        {
+          "include": "source.groovy"
+        }
+      ]
+    },
+    "code-generic": {
+      "name": "markup.raw.block.jira",
+      "begin": "^\\s*(\\{)(code)(?:(:)([^}\\n]*))?(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(code)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "markup.raw.block.jira"
+    },
+    "noformat": {
+      "name": "markup.raw.block.jira",
+      "begin": "^\\s*(\\{)(noformat)(?:(:)([^}\\n]*))?(\\})\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "end": "^\\s*(\\{)(noformat)(\\})\\s*$",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      },
+      "contentName": "markup.raw.block.jira"
+    },
+    "heading": {
+      "match": "^\\s*(h[1-6]\\.)[ \\t]*(.*)$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.heading.jira keyword.control.jira"
+        },
+        "2": {
+          "name": "markup.heading.jira entity.name.section.jira",
+          "patterns": [
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    },
+    "thematic-break": {
+      "match": "^\\s*-{4,}\\s*$",
+      "name": "meta.separator.jira punctuation.definition.thematic-break.jira"
+    },
+    "blockquote-line": {
+      "match": "^\\s*(bq\\.)[ \\t]*(.*)$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.quote.jira keyword.control.jira"
+        },
+        "2": {
+          "name": "markup.quote.jira",
+          "patterns": [
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    },
+    "list": {
+      "match": "^\\s*([*#-]+)(?=[ \\t])",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.list.jira keyword.control.jira"
+        }
+      }
+    },
+    "table": {
+      "begin": "^(?=\\s*\\|)",
+      "end": "$",
+      "patterns": [
+        {
+          "match": "\\|\\|",
+          "name": "punctuation.definition.table.header.jira keyword.control.jira"
+        },
+        {
+          "match": "\\|",
+          "name": "punctuation.definition.table.jira keyword.control.jira"
+        },
+        {
+          "include": "#inline"
+        }
+      ]
+    },
+    "macro": {
+      "match": "(\\{)(panel|quote|color|note|info|tip|warning|anchor|status|excerpt|section|column|toc|children|jiraissues)(?:(:)([^}\\n]*))?(\\})",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.macro.jira"
+        },
+        "2": {
+          "name": "support.function.macro.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "variable.parameter.jira"
+        },
+        "5": {
+          "name": "punctuation.definition.macro.jira"
+        }
+      }
+    },
+    "escape": {
+      "match": "\\\\.",
+      "name": "constant.character.escape.jira"
+    },
+    "monospace": {
+      "match": "(\\{\\{)([^\\n]*?)(\\}\\})",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.raw.jira"
+        },
+        "2": {
+          "name": "markup.inline.raw.jira string.other.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.raw.jira"
+        }
+      }
+    },
+    "link": {
+      "match": "(\\[)([^\\]\\n]*?)(?:(\\|)([^\\]\\n]*?))?(\\])",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.link.jira"
+        },
+        "2": {
+          "name": "string.other.link.title.jira"
+        },
+        "3": {
+          "name": "punctuation.separator.jira"
+        },
+        "4": {
+          "name": "markup.underline.link.jira"
+        },
+        "5": {
+          "name": "punctuation.definition.link.jira"
+        }
+      }
+    },
+    "image": {
+      "match": "(!)([^\\s!|][^!\\n]*?)(!)",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.image.jira"
+        },
+        "2": {
+          "name": "markup.underline.link.image.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.image.jira"
+        }
+      }
+    },
+    "bold": {
+      "name": "markup.bold.jira",
+      "match": "(?<![\\p{L}\\p{N}_\\\\])(\\*)(?![\\s\\*])([^\\n]*?)(?<!\\s)(\\*)(?![\\p{L}\\p{N}_])",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.jira"
+        }
+      }
+    },
+    "italic": {
+      "name": "markup.italic.jira",
+      "match": "(?<![\\p{L}\\p{N}_\\\\])(_)(?![\\s_])([^\\n]*?)(?<!\\s)(_)(?![\\p{L}\\p{N}_])",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.jira"
+        }
+      }
+    },
+    "strikethrough": {
+      "name": "markup.strikethrough.jira",
+      "match": "(?<![\\p{L}\\p{N}_\\\\])(-)(?![\\s-])([^\\n]*?)(?<!\\s)(-)(?![\\p{L}\\p{N}_])",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.jira"
+        }
+      }
+    },
+    "underline": {
+      "name": "markup.underline.jira",
+      "match": "(?<![\\p{L}\\p{N}_\\\\])(\\+)(?![\\s\\+])([^\\n]*?)(?<!\\s)(\\+)(?![\\p{L}\\p{N}_])",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.jira"
+        }
+      }
+    },
+    "superscript": {
+      "name": "markup.other.superscript.jira",
+      "match": "(?<!\\\\)(\\^)(?![\\s\\^])([^\\n]*?)(?<!\\s)(\\^)",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.jira"
+        }
+      }
+    },
+    "subscript": {
+      "name": "markup.other.subscript.jira",
+      "match": "(?<!\\\\)(~)(?![\\s~])([^\\n]*?)(?<!\\s)(~)",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.jira"
+        }
+      }
+    },
+    "citation": {
+      "name": "markup.quote.jira",
+      "match": "(\\?\\?)(?!\\s)([^\\n]*?)(?<!\\s)(\\?\\?)",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.jira"
+        },
+        "3": {
+          "name": "punctuation.definition.jira"
+        }
+      }
+    },
+    "url": {
+      "match": "(?<![\\p{L}\\p{N}_])(?:https?://|ftp://|www\\.)[^\\s<>\"'`)\\]}]+",
+      "name": "markup.underline.link.jira"
+    },
+    "inline": {
+      "patterns": [
+        {
+          "include": "#escape"
+        },
+        {
+          "include": "#monospace"
+        },
+        {
+          "include": "#macro"
+        },
+        {
+          "include": "#image"
+        },
+        {
+          "include": "#link"
+        },
+        {
+          "include": "#url"
+        },
+        {
+          "include": "#citation"
+        },
+        {
+          "include": "#bold"
+        },
+        {
+          "include": "#italic"
+        },
+        {
+          "include": "#underline"
+        },
+        {
+          "include": "#superscript"
+        },
+        {
+          "include": "#subscript"
+        },
+        {
+          "include": "#strikethrough"
+        }
+      ]
+    }
+  }
+}

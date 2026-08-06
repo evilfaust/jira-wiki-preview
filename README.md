@@ -1,76 +1,110 @@
 # Jira Wiki Markup — Editor & Preview
 
-Расширение VS Code для написания описаний и комментариев Jira: подсветка синтаксиса
-Jira Wiki Markup и живое превью сбоку — так же, как это работает для Markdown.
+Write Jira descriptions and comments in VS Code instead of a cramped browser textarea.
+Syntax highlighting for Jira Wiki Markup plus a live side-by-side preview — the same
+workflow you already have for Markdown.
 
-## Возможности
+[Русская версия README](README.ru.md)
 
-- **Превью в реальном времени** (`Cmd+Shift+V` / `Ctrl+Shift+V`) — панель сбоку, оформленная под Jira,
-  со светлой и тёмной темой.
-- **Синхронный скролл** в обе стороны и переход к строке по двойному клику в превью.
-- **Подсветка синтаксиса** — и в редакторе, и в превью, включая содержимое блоков
-  `{code:java}`, `{code:sql}`, `{code:json}` и ещё ~45 языков (highlight.js).
-  Без указания языка (`{code}` и `{noformat}`) код показывается как есть.
-- **Горячие клавиши форматирования**: `Cmd+B` — жирный, `Cmd+I` — курсив,
-  `Cmd+Shift+M` — моноширинный, `Cmd+K` — ссылка. Повторное нажатие снимает форматирование.
-- **Сниппеты**: `h1`, `code`, `table`, `panel`, `info`, `note`, `tip`, `warning`, `link`, `status` и другие.
-- **Черновик в один клик**: команда `Jira: Новый Jira-документ (черновик)` открывает
-  пустой файл с превью — удобно писать длинный комментарий и потом скопировать в Jira.
-- **Копирование исходника**: `Jira: Скопировать исходник в буфер обмена` (копирует выделение или весь файл).
+## Why
 
-## Поддерживаемый синтаксис
+Jira's comment and description fields are small, and the wiki markup they accept is
+easy to get wrong without seeing the result. This extension gives you a real editor
+for that markup: highlighting while you type, and a preview pane that shows what Jira
+will render. Write the text, then paste it into Jira.
 
-| Категория | Разметка |
+## Features
+
+- **Live preview** (`Ctrl+Shift+V` / `Cmd+Shift+V`) styled after the Jira UI, with light
+  and dark palettes — or your current VS Code theme colors.
+- **Two-way scroll sync** between editor and preview, and double-click in the preview to
+  jump to the corresponding source line.
+- **Syntax highlighting** in the editor *and* in the preview, including code inside
+  `{code:java}`, `{code:sql}`, `{code:json}` and ~45 other languages.
+- **Formatting shortcuts**: `Ctrl+B` bold, `Ctrl+I` italic, `Ctrl+Shift+M` monospace,
+  `Ctrl+K` link. Pressing again removes the formatting.
+- **Snippets** for the constructs you actually type: `h1`, `code`, `table`, `panel`,
+  `info`, `note`, `tip`, `warning`, `link`, `status`, and more.
+- **Scratch document**: the `Jira: New Jira document` command opens an empty file with
+  the preview already open — write, then copy into Jira.
+- **Issue links**: set `jira.baseUrl` and `ABC-123` / `[~user]` become clickable.
+
+> The command titles and settings descriptions are currently in Russian; the extension
+> itself works the same in any locale. Translations are welcome — see
+> [Contributing](#contributing).
+
+## Supported syntax
+
+| Category | Markup |
 | --- | --- |
-| Заголовки | `h1.` … `h6.` |
-| Начертание | `*жирный*`, `_курсив_`, `-зачёркнутый-`, `+подчёркнутый+`, `^индекс^`, `~индекс~`, `??цитата??`, `{{моно}}` |
-| Цвет и статус | `{color:red}…{color}`, `{status:colour=Green\|title=Готово}` |
-| Списки | `*`, `#`, `-` с любой вложенностью и смешиванием (`*#`) |
-| Таблицы | `\|\|заголовок\|\|` и `\|ячейка\|` |
-| Блоки | `{code:lang\|title=…}`, `{noformat}`, `{quote}`, `bq.`, `{panel:title=…}` |
-| Сообщения | `{info}`, `{note}`, `{tip}`, `{warning}` |
-| Ссылки | `[url]`, `[текст\|url]`, `[текст\|url\|подсказка]`, `[~user]`, `[^вложение]`, `[#якорь]`, `{anchor:имя}` |
-| Картинки | `!file.png!`, `!file.png\|thumbnail!`, `!url\|width=300, align=right!` |
-| Прочее | `----` линия, `\\` перенос строки, `---`/`--` тире, эмотиконы `(y) (n) (i) (/) (x) (!)` |
+| Headings | `h1.` … `h6.` |
+| Text effects | `*bold*`, `_italic_`, `-strikethrough-`, `+underline+`, `^sup^`, `~sub~`, `??citation??`, `{{monospace}}` |
+| Color and status | `{color:red}…{color}`, `{status:colour=Green\|title=Done}` |
+| Lists | `*`, `#`, `-` with arbitrary nesting and mixing (`*#`) |
+| Tables | `\|\|header\|\|` and `\|cell\|` |
+| Blocks | `{code:lang\|title=…}`, `{noformat}`, `{quote}`, `bq.`, `{panel:title=…}` |
+| Message macros | `{info}`, `{note}`, `{tip}`, `{warning}` |
+| Links | `[url]`, `[text\|url]`, `[text\|url\|tooltip]`, `[~user]`, `[^attachment]`, `[#anchor]`, `{anchor:name}` |
+| Images | `!file.png!`, `!file.png\|thumbnail!`, `!url\|width=300, align=right!` |
+| Misc | `----` rule, `\\` line break, `---`/`--` dashes, emoticons `(y) (n) (i) (/) (x) (!)` |
 
-## Настройки
+## Settings
 
-| Параметр | По умолчанию | Назначение |
+| Setting | Default | Description |
 | --- | --- | --- |
-| `jira.preview.theme` | `jira` | Оформление превью: `jira` или `editor` (цвета темы VS Code) |
-| `jira.preview.fontSize` | `14` | Размер шрифта в превью |
-| `jira.preview.fontFamily` | системный | Шрифт текста в превью |
-| `jira.preview.maxWidth` | `0` | Максимальная ширина колонки текста, px (`0` — без ограничения) |
-| `jira.preview.scrollPreviewWithEditor` | `true` | Скролл превью вслед за редактором |
-| `jira.preview.scrollEditorWithPreview` | `true` | Скролл редактора вслед за превью |
-| `jira.preview.doubleClickToSwitchToEditor` | `true` | Двойной клик в превью → переход на строку |
-| `jira.preview.highlightCode` | `true` | Подсветка синтаксиса внутри `{code:язык}` |
-| `jira.baseUrl` | `""` | Базовый URL Jira: включает ссылки на задачи `ABC-123` и профили `[~user]` |
+| `jira.preview.theme` | `jira` | Preview styling: `jira` colors or `editor` (current VS Code theme) |
+| `jira.preview.fontSize` | `14` | Preview font size, px |
+| `jira.preview.fontFamily` | system | Preview font family |
+| `jira.preview.maxWidth` | `0` | Max text column width in px (`0` — unlimited) |
+| `jira.preview.scrollPreviewWithEditor` | `true` | Preview follows the editor's scroll |
+| `jira.preview.scrollEditorWithPreview` | `true` | Editor follows the preview's scroll |
+| `jira.preview.doubleClickToSwitchToEditor` | `true` | Double-click in preview jumps to the source line |
+| `jira.preview.highlightCode` | `true` | Syntax highlighting inside `{code:lang}` blocks |
+| `jira.baseUrl` | `""` | Your Jira base URL, e.g. `https://company.atlassian.net` |
 
-## Как открыть файл как Jira-разметку
+## File types
 
-Расширение включается для файлов `.jira`, `.jira.txt`, `.jirawiki`. Для любого другого
-файла язык можно переключить вручную: `Cmd+Shift+P` → `Change Language Mode` → `Jira Wiki Markup`.
+The extension activates for `.jira`, `.jira.txt` and `.jirawiki` files. For any other
+file, switch manually: `Ctrl+Shift+P` → `Change Language Mode` → `Jira Wiki Markup`.
 
-## Разработка
+## Installing from a `.vsix`
+
+Grab the package from the [Releases](https://github.com/evilfaust/jira-wiki-preview/releases)
+page, then either use the Extensions view (`…` menu → **Install from VSIX…**) or run:
+
+```bash
+code --install-extension jira-wiki-preview-0.1.0.vsix
+```
+
+## Development
 
 ```bash
 npm install
-npm run compile      # сборка в dist/
-npm run watch        # пересборка при изменениях
-npm test             # тесты парсера
-npm run typecheck    # проверка типов
-npm run grammar      # пересобрать TextMate-грамматику
-npm run vsix         # сборка .vsix
+npm run compile      # bundle into dist/
+npm run watch        # rebuild on change
+npm test             # parser and highlighter tests
+npm run typecheck    # type checking
+npm run grammar      # regenerate the TextMate grammar
+npm run icon         # regenerate the extension icon
+npm run vsix         # build the .vsix package
 ```
 
-Отладка: `F5` в VS Code запускает Extension Development Host с открытым `samples/demo.jira`.
+Press `F5` in VS Code to launch an Extension Development Host with `samples/demo.jira`
+open — that file exercises every supported construct.
 
-Грамматика `syntaxes/jira.tmLanguage.json` генерируется из `scripts/gen-grammar.js`
-(там же список языков, подсвечиваемых внутри `{code:…}` в редакторе); парсер живёт
-в `src/parser/` и не зависит ни от API VS Code, ни от highlight.js — подсветка
-подключается к нему через опцию `highlightCode`, поэтому парсер покрыт обычными
-юнит-тестами (`test/parser.test.ts`, `test/highlight.test.ts`).
+The markup parser in `src/parser/` depends on neither the VS Code API nor highlight.js
+(highlighting is injected through the `highlightCode` option), so it is covered by plain
+unit tests in `test/`. The TextMate grammar is generated by `scripts/gen-grammar.js`,
+and the icon by `scripts/gen-icon.js`.
 
-Набор языков для подсветки в превью — `highlight.js/lib/common` плюс несколько
-дополнительных в `src/highlight.ts`; там же живут алиасы вроде `gradle` → `groovy`.
+## Contributing
+
+Issues and pull requests are welcome — in particular, translating the command titles
+and setting descriptions to English via VS Code's `package.nls.json` localization.
+
+## License
+
+[MIT](LICENSE).
+
+Jira is a trademark of Atlassian. This extension is an independent project and is not
+affiliated with, endorsed by, or sponsored by Atlassian.

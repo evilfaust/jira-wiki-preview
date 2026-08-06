@@ -1,10 +1,23 @@
 {
   "name": "jira-wiki-preview",
   "displayName": "Jira Wiki Markup — Editor & Preview",
-  "description": "Подсветка синтаксиса Jira Wiki Markup и живое превью в стиле Jira — как у Markdown, только для Jira.",
+  "description": "Write Jira descriptions and comments in VS Code: syntax highlighting for Jira Wiki Markup and a live side-by-side preview, just like Markdown.",
   "version": "0.1.0",
-  "publisher": "local",
+  "publisher": "evilfaust",
   "license": "MIT",
+  "icon": "media/icons/icon.png",
+  "galleryBanner": {
+    "color": "#0747A6",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/evilfaust/jira-wiki-preview.git"
+  },
+  "homepage": "https://github.com/evilfaust/jira-wiki-preview#readme",
+  "bugs": {
+    "url": "https://github.com/evilfaust/jira-wiki-preview/issues"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -259,6 +272,7 @@
   },
   "scripts": {
     "grammar": "node scripts/gen-grammar.js",
+    "icon": "node scripts/gen-icon.js",
     "compile": "node esbuild.js",
     "watch": "node esbuild.js --watch",
     "package": "node esbuild.js --production",

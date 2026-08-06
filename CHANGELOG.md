@@ -1,26 +1,27 @@
 # Changelog
 
-Все заметные изменения этого расширения описаны здесь.
-Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
-версии следуют [семантическому версионированию](https://semver.org/lang/ru/).
+All notable changes to this extension are documented here.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.1.0] — 2026-08-06
 
-Первая версия.
+First release.
 
-### Добавлено
+### Added
 
-- Язык `jira` для файлов `.jira`, `.jira.txt`, `.jirawiki` и TextMate-грамматика
-  с подсветкой синтаксиса, включая вложенную подсветку языков в `{code:…}`.
-- Панель превью (`Cmd+Shift+V` / `Ctrl+Shift+V`) с живым обновлением,
-  двусторонней синхронизацией скролла и переходом к строке по двойному клику.
-- Оформление превью под интерфейс Jira со светлой и тёмной палитрой,
-  либо под цвета текущей темы VS Code (`jira.preview.theme`).
-- Подсветка синтаксиса внутри блоков `{code:язык}` в превью (highlight.js,
-  ~45 языков), отключается настройкой `jira.preview.highlightCode`.
-- Команды форматирования с горячими клавишами: жирный, курсив, моноширинный,
-  зачёркнутый, вставка ссылки, блока кода и таблицы.
-- Команда «Новый Jira-документ (черновик)» — пустой файл с превью сбоку —
-  и «Скопировать исходник в буфер обмена».
-- 22 сниппета для частых конструкций разметки.
-- Настройка `jira.baseUrl` — ссылки на задачи вида `ABC-123` и профили `[~user]`.
+- A `jira` language for `.jira`, `.jira.txt` and `.jirawiki` files, with a TextMate
+  grammar that also highlights embedded languages inside `{code:…}` blocks.
+- A live preview pane (`Ctrl+Shift+V` / `Cmd+Shift+V`) with debounced updates,
+  two-way scroll sync, and double-click to jump to the source line.
+- Preview styling that follows the Jira UI in light and dark palettes, or the current
+  VS Code theme colors (`jira.preview.theme`).
+- Syntax highlighting inside `{code:lang}` blocks in the preview via highlight.js
+  (~45 languages), switchable with `jira.preview.highlightCode`.
+- Formatting commands with keyboard shortcuts: bold, italic, monospace, strikethrough,
+  insert link, insert code block, insert table.
+- A `Jira: New Jira document` command that opens a scratch file with the preview
+  already open, plus `Jira: Copy source to clipboard`.
+- 22 snippets for common markup constructs.
+- A `jira.baseUrl` setting that turns `ABC-123` issue keys and `[~user]` mentions
+  into working links.

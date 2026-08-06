@@ -278,7 +278,8 @@
     "package": "node esbuild.js --production",
     "typecheck": "tsc --noEmit",
     "test": "node --test --experimental-strip-types test/*.test.ts",
-    "vsix": "npm run package && vsce package --no-dependencies --allow-missing-repository"
+    "vsix": "npm run package && vsce package --no-dependencies",
+    "release": "npm run package && vsce publish --no-dependencies"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

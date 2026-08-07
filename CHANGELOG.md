@@ -4,6 +4,24 @@ All notable changes to this extension are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] — 2026-08-07
+
+### Changed
+
+- Emoticons are now drawn as inline SVG copies of the classic Atlassian icon set,
+  so the preview matches what Jira actually renders. Previously they were substituted
+  with system emoji, which look different on every platform. Icons scale with
+  `jira.preview.fontSize`.
+- The publisher id changed from `local` to `evilfaust` in preparation for the
+  Marketplace. **This changes the extension id**, so an older build installed from a
+  `.vsix` must be uninstalled manually — it will not be replaced automatically.
+
+### Added
+
+- Alternative emoticon spellings that Jira also accepts: `:-)`, `:-(`, `;-)`,
+  `(Y)`, `(N)`, `(I)`, `(X)`.
+- Extension icon and Marketplace metadata; English README for the storefront.
+
 ## [0.1.0] — 2026-08-06
 
 First release.
@@ -22,8 +40,6 @@ First release.
   insert link, insert code block, insert table.
 - A `Jira: New Jira document` command that opens a scratch file with the preview
   already open, plus `Jira: Copy source to clipboard`.
-- Emoticons rendered as inline SVG copies of the classic Atlassian icon set, so the
-  preview matches what Jira actually draws instead of substituting system emoji.
 - 22 snippets for common markup constructs.
 - A `jira.baseUrl` setting that turns `ABC-123` issue keys and `[~user]` mentions
   into working links.

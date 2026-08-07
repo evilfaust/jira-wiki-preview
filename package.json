@@ -2,7 +2,7 @@
   "name": "jira-wiki-preview",
   "displayName": "Jira Wiki Markup — Editor & Preview",
   "description": "Write Jira descriptions and comments in VS Code: syntax highlighting for Jira Wiki Markup and a live side-by-side preview, just like Markdown.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "evilfaust",
   "license": "MIT",
   "icon": "media/icons/icon.png",

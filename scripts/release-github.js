@@ -5,8 +5,13 @@
  * версия и changelog не могут разъехаться незаметно.
  *
  * Запуск:
- *   npm run release:github            — собрать и опубликовать
- *   npm run release:github -- --dry-run — показать, что будет сделано
+ *   npm run release:github                  — собрать и опубликовать
+ *   npm run release:github -- --dry-run     — пройти весь путь, кроме публикации:
+ *                                             проверки, сборка, проверка пакета,
+ *                                             запись описания. Останов перед
+ *                                             необратимым gh release create.
+ *   npm run release:github -- --checks-only — только проверки и текст описания,
+ *                                             без сборки (быстро)
  */
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
@@ -14,6 +19,7 @@ const path = require('node:path');
 
 const root = path.join(__dirname, '..');
 const dryRun = process.argv.includes('--dry-run');
+const checksOnly = process.argv.includes('--checks-only');
 
 function fail(message, hint) {
   console.error(`\n✘ ${message}`);
@@ -106,36 +112,59 @@ Full history in [CHANGELOG.md](https://github.com/evilfaust/jira-wiki-preview/bl
 // --- Сборка и публикация ------------------------------------------------
 console.log(`Версия ${version}, тег ${tag}, ветка ${branch} — проверки пройдены.`);
 
-if (dryRun) {
+if (checksOnly) {
   console.log(`\n--- описание релиза ---\n${notes}`);
-  console.log(`Пробный запуск: сборка и публикация пропущены. Был бы приложен ${vsix}.`);
+  console.log(`Только проверки: сборка и публикация пропущены. Был бы приложен ${vsix}.`);
   process.exit(0);
 }
 
 console.log('Собираю пакет…');
+const startedAt = Date.now();
 run('npm', ['run', 'vsix'], { stdio: ['ignore', 'inherit', 'inherit'] });
 
-if (!fs.existsSync(path.join(root, vsix))) {
-  fail(`Сборка не создала ${vsix}.`);
+const vsixPath = path.join(root, vsix);
+if (!fs.existsSync(vsixPath)) fail(`Сборка не создала ${vsix}.`);
+
+/** Пакет должен быть свежим zip-архивом, а не остатком прошлой сборки. */
+const stat = fs.statSync(vsixPath);
+if (stat.size < 1024) fail(`${vsix} подозрительно мал: ${stat.size} байт.`);
+if (stat.mtimeMs < startedAt) {
+  fail(
+    `${vsix} не перезаписан текущей сборкой.`,
+    'Похоже, это файл от прошлого запуска — удалите его и попробуйте снова.',
+  );
 }
+const header = Buffer.alloc(2);
+const handle = fs.openSync(vsixPath, 'r');
+fs.readSync(handle, header, 0, 2, 0);
+fs.closeSync(handle);
+if (header.toString('latin1') !== 'PK') fail(`${vsix} не похож на zip-архив.`);
+console.log(`Пакет собран: ${vsix}, ${(stat.size / 1024).toFixed(0)} КБ.`);
 
 const notesFile = path.join(root, `.release-notes-${version}.md`);
+const ghArgs = [
+  'release',
+  'create',
+  tag,
+  vsix,
+  '--title',
+  `${tag} — ${manifest.displayName}`,
+  '--notes-file',
+  notesFile,
+];
+
 fs.writeFileSync(notesFile, notes);
+
+if (dryRun) {
+  console.log(`Описание записано во временный файл: ${path.basename(notesFile)}.`);
+  fs.rmSync(notesFile, { force: true });
+  console.log(`\n--- описание релиза ---\n${notes}`);
+  console.log(`Пробный запуск. Осталась одна команда, она не выполнялась:\n  gh ${ghArgs.join(' ')}`);
+  process.exit(0);
+}
+
 try {
-  run(
-    'gh',
-    [
-      'release',
-      'create',
-      tag,
-      vsix,
-      '--title',
-      `${tag} — ${manifest.displayName}`,
-      '--notes-file',
-      notesFile,
-    ],
-    { stdio: ['ignore', 'inherit', 'inherit'] },
-  );
+  run('gh', ghArgs, { stdio: ['ignore', 'inherit', 'inherit'] });
 } finally {
   fs.rmSync(notesFile, { force: true });
 }

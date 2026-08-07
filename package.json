@@ -328,7 +328,8 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test --experimental-strip-types test/*.test.ts",
     "vsix": "npm run package && vsce package --no-dependencies",
-    "release": "npm run package && vsce publish --no-dependencies"
+    "release": "npm run package && vsce publish --no-dependencies",
+    "release:github": "node scripts/release-github.js"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

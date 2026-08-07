@@ -202,6 +202,8 @@ npm run grammar      # regenerate the TextMate grammar
 npm run icon         # regenerate the extension icon
 npm run vsix         # build the .vsix package
 npm run release:github # tag, build and publish a GitHub release
+npm run release:github -- --dry-run     # everything except the publish step
+npm run release:github -- --checks-only # pre-flight checks only, no build
 ```
 
 Press `F5` in VS Code to launch an Extension Development Host with `samples/demo.jira`

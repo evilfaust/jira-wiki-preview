@@ -184,6 +184,8 @@ npm run grammar      # пересобрать TextMate-грамматику
 npm run icon         # пересобрать иконку расширения
 npm run vsix         # сборка .vsix
 npm run release:github # тег, сборка и релиз на GitHub
+npm run release:github -- --dry-run     # весь путь, кроме публикации
+npm run release:github -- --checks-only # только проверки, без сборки
 ```
 
 Отладка: `F5` в VS Code запускает Extension Development Host с открытым `samples/demo.jira`.

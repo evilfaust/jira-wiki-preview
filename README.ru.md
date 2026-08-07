@@ -5,6 +5,8 @@ Jira Wiki Markup и живое превью сбоку — так же, как �
 
 [English README](README.md)
 
+![Редактор и живое превью рядом](media/screenshot.png)
+
 ## Возможности
 
 - **Превью в реальном времени** (`Cmd+Shift+V` / `Ctrl+Shift+V`) — панель сбоку, оформленная под Jira,

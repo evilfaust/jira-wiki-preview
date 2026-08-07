@@ -6,6 +6,8 @@ workflow you already have for Markdown.
 
 [Русская версия README](README.ru.md)
 
+![Editor and live preview side by side](media/screenshot.png)
+
 ## Why
 
 Jira's comment and description fields are small, and the wiki markup they accept is

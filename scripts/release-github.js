@@ -22,7 +22,9 @@ function fail(message, hint) {
 }
 
 function run(command, args, options = {}) {
-  return execFileSync(command, args, { cwd: root, encoding: 'utf8', ...options }).trim();
+  // При stdio: inherit вывод уходит в терминал, а execFileSync возвращает null.
+  const output = execFileSync(command, args, { cwd: root, encoding: 'utf8', ...options });
+  return typeof output === 'string' ? output.trim() : '';
 }
 
 function tryRun(command, args) {

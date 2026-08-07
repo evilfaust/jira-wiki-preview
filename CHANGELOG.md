@@ -4,6 +4,16 @@ All notable changes to this extension are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.3] — 2026-08-07
+
+### Changed
+
+- The README now opens with a screenshot of the editor and the live preview side
+  by side, taken from the `samples/demo.jira` file that ships with the repository.
+
+The extension itself is byte-for-byte identical to 0.4.2 — this release carries
+documentation only.
+
 ## [0.4.2] — 2026-08-07
 
 ### Fixed

@@ -44,7 +44,7 @@ Russian. Other languages are welcome — see [Contributing](#contributing).
 | Color and status | `{color:red}…{color}`, `{status:colour=Green\|title=Done}` |
 | Lists | `*`, `#`, `-` with arbitrary nesting and mixing (`*#`) |
 | Tables | `\|\|header\|\|` and `\|cell\|` |
-| Blocks | `{code:lang\|title=…}`, `{noformat}`, `{quote}`, `bq.`, `{panel:title=…}` |
+| Blocks | `{code:lang\|title=…}`, `{noformat}`, `{quote}`, `bq.`, `{panel:title=…}` — `{code}` also works inside a line, e.g. in a table cell |
 | Message macros | `{info}`, `{note}`, `{tip}`, `{warning}` |
 | Table of contents | `{toc}`, `{toc:minLevel=2\|maxLevel=3}`, `{toc:type=flat}` |
 | Links | `[url]`, `[text\|url]`, `[text\|url\|tooltip]`, `[~user]`, `[^attachment]`, `[#anchor]`, `{anchor:name}` |

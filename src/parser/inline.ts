@@ -299,6 +299,28 @@ function tryMacro(src: string, i: number, opts: RenderOptions): InlineMatch | nu
   const params = match[2] ?? '';
   const openLength = match[0].length;
 
+  // `{code}` и `{noformat}` в Jira блочные, но их постоянно пишут внутри строки —
+  // чаще всего в ячейке таблицы. Отрисовываем как инлайновый код: <div> внутри
+  // <p> или <td> был бы невалидной вложенностью.
+  if (name === 'code' || name === 'noformat') {
+    const closeTag = `{${name}}`;
+    const close = src.toLowerCase().indexOf(closeTag, i + openLength);
+    if (close < 0) return null;
+
+    const content = src.slice(i + openLength, close);
+    const parsed = parseParams(params);
+    const language = name === 'code' ? (parsed.language ?? parsed._ ?? '') : '';
+    const highlighted =
+      language && opts.highlightCode ? opts.highlightCode(content, language) : null;
+    const languageClass = /^[\w+#.-]+$/.test(language) ? ` language-${language.toLowerCase()}` : '';
+    const classes = `jira-code-inline${languageClass}${highlighted === null ? '' : ' hljs'}`;
+
+    return {
+      html: `<code class="${classes}">${highlighted ?? escapeHtml(content)}</code>`,
+      length: close + closeTag.length - i,
+    };
+  }
+
   if (name === 'anchor') {
     return {
       html: `<a class="jira-anchor" id="${escapeHtml(params.trim())}"></a>`,

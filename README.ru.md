@@ -33,7 +33,7 @@ Jira Wiki Markup и живое превью сбоку — так же, как �
 | Цвет и статус | `{color:red}…{color}`, `{status:colour=Green\|title=Готово}` |
 | Списки | `*`, `#`, `-` с любой вложенностью и смешиванием (`*#`) |
 | Таблицы | `\|\|заголовок\|\|` и `\|ячейка\|` |
-| Блоки | `{code:lang\|title=…}`, `{noformat}`, `{quote}`, `bq.`, `{panel:title=…}` |
+| Блоки | `{code:lang\|title=…}`, `{noformat}`, `{quote}`, `bq.`, `{panel:title=…}` — `{code}` работает и внутри строки, например в ячейке таблицы |
 | Сообщения | `{info}`, `{note}`, `{tip}`, `{warning}` |
 | Оглавление | `{toc}`, `{toc:minLevel=2\|maxLevel=3}`, `{toc:type=flat}` |
 | Ссылки | `[url]`, `[текст\|url]`, `[текст\|url\|подсказка]`, `[~user]`, `[^вложение]`, `[#якорь]`, `{anchor:имя}` |

@@ -194,7 +194,8 @@ ul.jira-dash-list {
 }
 
 /* --- Моноширинный текст и код ---------------------------------------- */
-code.jira-mono {
+code.jira-mono,
+code.jira-code-inline {
   font-family: var(--jira-mono-family);
   font-size: 0.857em;
   background: var(--jira-code-bg);
@@ -202,6 +203,15 @@ code.jira-mono {
   border: 1px solid var(--jira-border);
   border-radius: 3px;
   padding: 1px 4px;
+}
+
+/* {code} внутри строки: перенос по словам, чтобы не растягивать ячейку таблицы. */
+code.jira-code-inline {
+  display: inline-block;
+  padding: 2px 6px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 100%;
 }
 
 .jira-code {

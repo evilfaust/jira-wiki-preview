@@ -114,6 +114,41 @@ test('если подсветка вернула null, код экранируе
   assert.doesNotMatch(html, / hljs"/);
 });
 
+test('{code} внутри строки отрисовывается как код', () => {
+  const html = render('смотри {code:java}int x = 1;{code} вот так');
+  assert.match(html, /<code class="jira-code-inline language-java">int x = 1;<\/code>/);
+  assert.match(html, /смотри /);
+  assert.match(html, / вот так/);
+});
+
+test('{code} внутри ячейки таблицы', () => {
+  const html = render('||now||new||\n| {code:java}$code = "sbp";{code} | {code}x{code} |');
+  assert.match(html, /<td><code class="jira-code-inline language-java">\$code = &quot;sbp&quot;;<\/code><\/td>/);
+  assert.match(html, /<td><code class="jira-code-inline">x<\/code><\/td>/);
+});
+
+test('{noformat} внутри строки', () => {
+  assert.match(render('вот {noformat}*как есть*{noformat} тут'), /<code class="jira-code-inline">\*как есть\*<\/code>/);
+});
+
+test('инлайновый {code} подсвечивается тем же обработчиком', () => {
+  const html = renderJira('| {code:java}x{code} |', {
+    highlightCode: (code, language) => `<i>${language}:${code}</i>`,
+  });
+  assert.match(html, /class="jira-code-inline language-java hljs"><i>java:x<\/i>/);
+});
+
+test('{code} на отдельной строке остаётся блоком', () => {
+  const html = render('{code:java}\nint x = 1;\n{code}');
+  assert.match(html, /<div class="jira-code"/);
+  assert.doesNotMatch(html, /jira-code-inline/);
+});
+
+test('незакрытый инлайновый {code} не съедает текст', () => {
+  const html = render('текст {code:java} без закрытия');
+  assert.match(html, /\{code:java\} без закрытия/);
+});
+
 test('noformat', () => {
   const html = render('{noformat}\n*как есть*\n{noformat}');
   assert.match(html, /\*как есть\*/);

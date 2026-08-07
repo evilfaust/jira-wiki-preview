@@ -22,6 +22,8 @@ First release.
   insert link, insert code block, insert table.
 - A `Jira: New Jira document` command that opens a scratch file with the preview
   already open, plus `Jira: Copy source to clipboard`.
+- Emoticons rendered as inline SVG copies of the classic Atlassian icon set, so the
+  preview matches what Jira actually draws instead of substituting system emoji.
 - 22 snippets for common markup constructs.
 - A `jira.baseUrl` setting that turns `ABC-123` issue keys and `[~user]` mentions
   into working links.

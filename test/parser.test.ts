@@ -213,9 +213,23 @@ test('привязка к строкам исходника', () => {
   assert.match(html, /<li data-line="4"/);
 });
 
-test('смайлы', () => {
-  assert.match(render('(y) готово'), /👍/);
-  assert.match(render('всё плохо (x)'), /❌/);
+test('эмотиконы отрисовываются иконками Jira', () => {
+  const html = render('(+) (-) (!) (/) (?)');
+  assert.equal(html.match(/<span class="jira-emoticon"/g)?.length, 5);
+  assert.equal(html.match(/<svg viewBox="0 0 16 16"/g)?.length, 5);
+  assert.match(html, /title="\(!\)"/);
+  // Цвета классического набора Atlassian: зелёный плюс, красный минус, синий вопрос
+  assert.match(render('(+)'), /#14892c/);
+  assert.match(render('(-)'), /#d04437/);
+  assert.match(render('(?)'), /#3572b0/);
+});
+
+test('эмотиконы: синонимы и границы слова', () => {
+  assert.match(render(':-) привет'), /jira-emoticon/);
+  assert.match(render('(Y) ок'), /jira-emoticon/);
+  assert.doesNotMatch(render('функция(x)вызов'), /jira-emoticon/);
+  // (*r) не должен разбираться как (*)
+  assert.equal(render('(*r)').match(/<svg/g)?.length, 1);
 });
 
 test('пустой документ', () => {

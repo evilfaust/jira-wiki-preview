@@ -46,7 +46,8 @@ will render. Write the text, then paste it into Jira.
 | Message macros | `{info}`, `{note}`, `{tip}`, `{warning}` |
 | Links | `[url]`, `[text\|url]`, `[text\|url\|tooltip]`, `[~user]`, `[^attachment]`, `[#anchor]`, `{anchor:name}` |
 | Images | `!file.png!`, `!file.png\|thumbnail!`, `!url\|width=300, align=right!` |
-| Misc | `----` rule, `\\` line break, `---`/`--` dashes, emoticons `(y) (n) (i) (/) (x) (!)` |
+| Misc | `----` rule, `\\` line break, `---`/`--` dashes |
+| Emoticons | `(+) (-) (!) (/) (x) (?) (i) (y) (n) (on) (off) (*) (*r) (*g) (*b) (flag) (flagoff) :) :( :D ;) :P` — drawn as the classic Atlassian icons, not system emoji |
 
 ## Settings
 

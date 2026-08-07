@@ -1,3 +1,4 @@
+import { EMOTICON_ICONS } from './emoticons.ts';
 import type { InlineMatch, RenderOptions } from './types.ts';
 
 const ESCAPE_MAP: Record<string, string> = {
@@ -28,35 +29,22 @@ const EMPHASIS: Record<string, string> = {
   '~': 'sub',
 };
 
-const EMOTICONS: Record<string, string> = {
-  ':)': '🙂',
-  ':(': '🙁',
-  ':P': '😛',
-  ':p': '😛',
-  ':D': '😃',
-  ';)': '😉',
-  '(y)': '👍',
-  '(n)': '👎',
-  '(i)': 'ℹ️',
-  '(/)': '✅',
-  '(x)': '❌',
-  '(!)': '⚠️',
-  '(+)': '➕',
-  '(-)': '➖',
-  '(?)': '❓',
-  '(on)': '💡',
-  '(off)': '🔌',
-  '(*)': '⭐',
-  '(*r)': '🔴',
-  '(*g)': '🟢',
-  '(*b)': '🔵',
-  '(*y)': '🟡',
-  '(flag)': '🚩',
-  '(flagoff)': '🏳️',
+/** Написания, ведущие на ту же иконку, что и канонический эмотикон. */
+const EMOTICON_SYNONYMS: Record<string, string> = {
+  ':p': ':P',
+  ':-)': ':)',
+  ':-(': ':(',
+  ';-)': ';)',
+  '(Y)': '(y)',
+  '(N)': '(n)',
+  '(I)': '(i)',
+  '(X)': '(x)',
 };
 
 /** Сначала более длинные ключи, чтобы `(*r)` не съедался как `(*)`. */
-const EMOTICON_KEYS = Object.keys(EMOTICONS).sort((a, b) => b.length - a.length);
+const EMOTICON_KEYS = [...Object.keys(EMOTICON_ICONS), ...Object.keys(EMOTICON_SYNONYMS)].sort(
+  (a, b) => b.length - a.length,
+);
 
 const URL_SCHEME_RE = /^(https?|ftp|ftps|file|mailto|tel):/i;
 const ISSUE_KEY_RE = /^[A-Za-z][A-Za-z0-9]*-\d+$/;
@@ -269,8 +257,10 @@ function tryEmoticon(src: string, i: number): InlineMatch | null {
   for (const key of EMOTICON_KEYS) {
     if (!src.startsWith(key, i)) continue;
     if (isWordChar(src[i + key.length])) continue;
+    const icon = EMOTICON_ICONS[EMOTICON_SYNONYMS[key] ?? key];
+    if (!icon) continue;
     return {
-      html: `<span class="jira-emoticon" title="${escapeHtml(key)}">${EMOTICONS[key]}</span>`,
+      html: `<span class="jira-emoticon" title="${escapeHtml(key)}">${icon}</span>`,
       length: key.length,
     };
   }

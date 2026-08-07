@@ -102,9 +102,9 @@ export class JiraPreview implements vscode.Disposable {
         highlightCode: settings.highlightCode ? highlightCode : undefined,
       });
     } catch (error) {
-      html = `<p class="jira-error">Не удалось отрисовать разметку: ${
-        error instanceof Error ? escapeHtmlText(error.message) : 'неизвестная ошибка'
-      }</p>`;
+      const reason =
+        error instanceof Error ? escapeHtmlText(error.message) : vscode.l10n.t('unknown error');
+      html = `<p class="jira-error">${escapeHtmlText(vscode.l10n.t('Could not render the markup:'))} ${reason}</p>`;
     }
 
     void this.panel.webview.postMessage({ type: 'update', html, settings });
@@ -194,7 +194,7 @@ export class JiraPreview implements vscode.Disposable {
     ].join('; ');
 
     return `<!DOCTYPE html>
-<html lang="ru">
+<html lang="${vscode.env.language}">
 <head>
 <meta charset="UTF-8"/>
 <meta http-equiv="Content-Security-Policy" content="${csp}"/>
@@ -205,7 +205,7 @@ export class JiraPreview implements vscode.Disposable {
 <body class="theme-${settings.theme === 'editor' ? 'editor' : 'jira'}" data-uri="${escapeHtmlText(
       this.document.uri.toString(),
     ).replace(/"/g, '&quot;')}">
-<div id="content" class="jira-content"><p class="jira-placeholder">Загрузка…</p></div>
+<div id="content" class="jira-content"><p class="jira-placeholder">${escapeHtmlText(vscode.l10n.t('Loading…'))}</p></div>
 <script nonce="${nonce}" src="${scriptUri}"></script>
 </body>
 </html>`;

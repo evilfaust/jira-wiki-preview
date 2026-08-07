@@ -82,12 +82,12 @@ export async function insertLink(): Promise<void> {
   const snippet = new vscode.SnippetString('[');
 
   if (/^(https?:\/\/|www\.|mailto:)/i.test(selected)) {
-    snippet.appendPlaceholder('текст ссылки');
+    snippet.appendPlaceholder(vscode.l10n.t('link text'));
     snippet.appendText('|');
     snippet.appendText(selected);
   } else {
     if (selected) snippet.appendText(selected);
-    else snippet.appendPlaceholder('текст ссылки');
+    else snippet.appendPlaceholder(vscode.l10n.t('link text'));
     snippet.appendText('|');
     snippet.appendPlaceholder('https://');
   }
@@ -119,13 +119,13 @@ export async function insertTable(): Promise<void> {
 
   const snippet = new vscode.SnippetString();
   snippet.appendText('||');
-  snippet.appendPlaceholder('Заголовок 1');
+  snippet.appendPlaceholder(vscode.l10n.t('Heading 1'));
   snippet.appendText('||');
-  snippet.appendPlaceholder('Заголовок 2');
+  snippet.appendPlaceholder(vscode.l10n.t('Heading 2'));
   snippet.appendText('||\n|');
-  snippet.appendPlaceholder('ячейка');
+  snippet.appendPlaceholder(vscode.l10n.t('cell'));
   snippet.appendText('|');
-  snippet.appendPlaceholder('ячейка');
+  snippet.appendPlaceholder(vscode.l10n.t('cell'));
   snippet.appendText('|\n');
   snippet.appendTabstop(0);
 
@@ -146,5 +146,5 @@ export async function copySource(): Promise<void> {
     ? editor.document.getText()
     : editor.document.getText(selection);
   await vscode.env.clipboard.writeText(text);
-  void vscode.window.setStatusBarMessage('Разметка Jira скопирована в буфер обмена', 2500);
+  void vscode.window.setStatusBarMessage(vscode.l10n.t('Jira markup copied to clipboard'), 2500);
 }

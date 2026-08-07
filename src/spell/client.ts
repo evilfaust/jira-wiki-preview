@@ -1,4 +1,5 @@
 import { type ChildProcess, fork } from 'node:child_process';
+import * as vscode from 'vscode';
 import type { WordLanguage } from './words.ts';
 
 /** Через столько миллисекунд простоя процесс со словарями закрывается. */
@@ -50,7 +51,7 @@ export class SpellClient {
   }
 
   private request(payload: Record<string, unknown>): Promise<unknown> {
-    if (this.disposed) return Promise.reject(new Error('Проверка орфографии остановлена'));
+    if (this.disposed) return Promise.reject(new Error(vscode.l10n.t('Spell checking has been stopped')));
 
     const child = this.ensureChild();
     const id = this.nextId++;
@@ -59,7 +60,7 @@ export class SpellClient {
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         this.pending.delete(id);
-        reject(new Error('Словарь не ответил вовремя'));
+        reject(new Error(vscode.l10n.t('The dictionary did not respond in time')));
       }, REQUEST_TIMEOUT_MS);
 
       this.pending.set(id, { resolve, reject, timer });
@@ -89,14 +90,14 @@ export class SpellClient {
 
     child.on('exit', (code, signal) => {
       const unexpected = !this.disposed && code !== 0 && signal !== 'SIGTERM';
-      this.failPending(new Error('Процесс проверки орфографии завершился'));
+      this.failPending(new Error(vscode.l10n.t('The spell checking process exited')));
       if (this.child === child) this.child = undefined;
-      if (unexpected) this.onError(`Процесс проверки орфографии упал (код ${code ?? signal}).`);
+      if (unexpected) this.onError(vscode.l10n.t('The spell checking process crashed (code {0}).', String(code ?? signal)));
     });
 
     child.on('error', (error) => {
       this.failPending(error);
-      this.onError(`Не удалось запустить проверку орфографии: ${error.message}`);
+      this.onError(vscode.l10n.t('Could not start spell checking: {0}', error.message));
     });
 
     this.child = child;
@@ -123,7 +124,7 @@ export class SpellClient {
   private stop(): void {
     if (this.idleTimer) clearTimeout(this.idleTimer);
     this.idleTimer = undefined;
-    this.failPending(new Error('Проверка орфографии остановлена'));
+    this.failPending(new Error(vscode.l10n.t('Spell checking has been stopped')));
     this.child?.kill();
     this.child = undefined;
   }

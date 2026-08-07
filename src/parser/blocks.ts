@@ -2,6 +2,7 @@ import { escapeHtml, parseParams, renderInline, sanitizeColor } from './inline.t
 import type { RenderOptions } from './types.ts';
 
 const HEADING_RE = /^\s*h([1-6])\.\s*(.*)$/i;
+const TOC_RE = /^\s*\{toc(?::([^}\n]*))?\}\s*$/i;
 const HR_RE = /^\s*-{4,}\s*$/;
 const BQ_RE = /^\s*bq\.\s?(.*)$/i;
 const LIST_RE = /^(\s*)([*#-]+)\s+(.*)$/;
@@ -41,13 +42,40 @@ interface MacroLine {
   inlineBody: string | null;
 }
 
-/** Переводит Jira Wiki Markup в HTML. */
-export function renderJira(source: string, opts: RenderOptions = {}): string {
-  const lines = source.split(/\r\n|\r|\n/);
-  return renderBlocks(lines, 0, opts);
+interface Heading {
+  level: number;
+  id: string;
+  text: string;
 }
 
-function renderBlocks(lines: string[], offset: number, opts: RenderOptions): string {
+/**
+ * Сквозное состояние документа: {toc} может стоять выше заголовков, на которые
+ * ссылается, поэтому оглавление подставляется после отрисовки, по меткам.
+ */
+interface RenderContext {
+  headings: Heading[];
+  tocs: { params: string; line: number }[];
+  usedIds: Set<string>;
+}
+
+/** Метка места, куда после отрисовки подставится оглавление. */
+const tocMark = (index: number): string => `\u0000TOC${index}\u0000`;
+
+/** Переводит Jira Wiki Markup в HTML. */
+export function renderJira(source: string, opts: RenderOptions = {}): string {
+  // Метки оглавления строятся на NUL, поэтому в тексте его быть не должно.
+  const lines = source.replace(/\0/g, '').split(/\r\n|\r|\n/);
+  const context: RenderContext = { headings: [], tocs: [], usedIds: new Set() };
+  const html = renderBlocks(lines, 0, opts, context);
+  return context.tocs.length ? substituteTocs(html, context) : html;
+}
+
+function renderBlocks(
+  lines: string[],
+  offset: number,
+  opts: RenderOptions,
+  context: RenderContext,
+): string {
   const out: string[] = [];
   let i = 0;
 
@@ -63,7 +91,9 @@ function renderBlocks(lines: string[], offset: number, opts: RenderOptions): str
     const macro = matchBlockMacro(line);
     if (macro) {
       if (macro.inlineBody !== null) {
-        out.push(renderMacro(macro.name, macro.params, [macro.inlineBody], lineNumber, lineNumber, opts));
+        out.push(
+          renderMacro(macro.name, macro.params, [macro.inlineBody], lineNumber, lineNumber, opts, context),
+        );
         i += 1;
         continue;
       }
@@ -78,19 +108,29 @@ function renderBlocks(lines: string[], offset: number, opts: RenderOptions): str
         body.push(lines[j]);
         j += 1;
       }
-      out.push(renderMacro(macro.name, macro.params, body, bodyOffset, lineNumber, opts));
+      out.push(renderMacro(macro.name, macro.params, body, bodyOffset, lineNumber, opts, context));
       i = j < lines.length ? j + 1 : j;
       continue;
     }
 
     const heading = HEADING_RE.exec(line);
     if (heading) {
-      const level = heading[1];
+      const level = Number(heading[1]);
       const text = heading[2];
-      const id = slugify(text);
+      const rendered = renderInline(text, opts);
+      const id = uniqueId(slugify(text) || `heading-${context.headings.length + 1}`, context);
+      context.headings.push({ level, id, text: stripTags(rendered) });
       out.push(
-        `<h${level} data-line="${lineNumber}" id="${escapeHtml(id)}">${renderInline(text, opts)}</h${level}>`,
+        `<h${level} data-line="${lineNumber}" id="${escapeHtml(id)}">${rendered}</h${level}>`,
       );
+      i += 1;
+      continue;
+    }
+
+    const toc = TOC_RE.exec(line);
+    if (toc) {
+      out.push(tocMark(context.tocs.length));
+      context.tocs.push({ params: toc[1] ?? '', line: lineNumber });
       i += 1;
       continue;
     }
@@ -159,6 +199,7 @@ function startsBlock(line: string): boolean {
     BQ_RE.test(line) ||
     LIST_RE.test(line) ||
     TABLE_RE.test(line) ||
+    TOC_RE.test(line) ||
     matchBlockMacro(line) !== null
   );
 }
@@ -187,6 +228,7 @@ function renderMacro(
   bodyOffset: number,
   blockLine: number,
   opts: RenderOptions,
+  context: RenderContext,
 ): string {
   const anchor = ` data-line="${blockLine}"`;
   const parsed = parseParams(params);
@@ -207,7 +249,7 @@ function renderMacro(
     );
   }
 
-  const inner = renderBlocks(body, bodyOffset, opts);
+  const inner = renderBlocks(body, bodyOffset, opts, context);
 
   if (name === 'panel') {
     const bodyStyles: string[] = [];
@@ -259,6 +301,96 @@ function trimBlankEdges(lines: string[]): string[] {
   while (start < end && !lines[start].trim()) start += 1;
   while (end > start && !lines[end - 1].trim()) end -= 1;
   return lines.slice(start, end);
+}
+
+/** Убирает теги из уже сгенерированного нами HTML — сущности остаются целыми. */
+function stripTags(html: string): string {
+  return html.replace(/<[^>]*>/g, '').trim();
+}
+
+/** Гарантирует уникальность якоря: два одинаковых заголовка ломают ссылки. */
+function uniqueId(base: string, context: RenderContext): string {
+  if (!context.usedIds.has(base)) {
+    context.usedIds.add(base);
+    return base;
+  }
+  let counter = 2;
+  while (context.usedIds.has(`${base}-${counter}`)) counter += 1;
+  const id = `${base}-${counter}`;
+  context.usedIds.add(id);
+  return id;
+}
+
+/** Подставляет оглавления вместо меток, оставленных при отрисовке. */
+function substituteTocs(html: string, context: RenderContext): string {
+  return context.tocs.reduce(
+    (result, toc, index) => result.replace(tocMark(index), () => renderToc(toc, context)),
+    html,
+  );
+}
+
+function renderToc(toc: { params: string; line: number }, context: RenderContext): string {
+  const parsed = parseParams(toc.params);
+  const minLevel = clampLevel(parsed.minlevel, 1);
+  const maxLevel = clampLevel(parsed.maxlevel, 6);
+  const flat = (parsed.type ?? '').toLowerCase() === 'flat';
+
+  const items = context.headings.filter((h) => h.level >= minLevel && h.level <= maxLevel);
+  const anchor = ` data-line="${toc.line}"`;
+  if (!items.length) return `<div class="jira-toc jira-toc-empty"${anchor}></div>`;
+
+  const link = (heading: Heading) =>
+    `<a href="#${escapeHtml(heading.id)}">${heading.text || escapeHtml(heading.id)}</a>`;
+
+  if (flat) {
+    return (
+      `<div class="jira-toc jira-toc-flat"${anchor}>` +
+      items.map(link).join('<span class="jira-toc-sep"> • </span>') +
+      '</div>'
+    );
+  }
+
+  return `<div class="jira-toc"${anchor}>${renderTocLevel(items, 0, minLevel, link)}</div>`;
+}
+
+/** Собирает вложенные списки из плоского перечня заголовков. */
+function renderTocLevel(
+  items: Heading[],
+  start: number,
+  level: number,
+  link: (heading: Heading) => string,
+): string {
+  const parts: string[] = [];
+  let i = start;
+
+  while (i < items.length && items[i].level >= level) {
+    if (items[i].level > level) {
+      // Пропуск уровня (h1 сразу h3) — вкладываем как есть, без пустых пунктов.
+      const nested = renderTocLevel(items, i, items[i].level, link);
+      parts.push(nested);
+      while (i < items.length && items[i].level > level) i += 1;
+      continue;
+    }
+    const children: Heading[] = [];
+    const self = items[i];
+    i += 1;
+    while (i < items.length && items[i].level > level) {
+      children.push(items[i]);
+      i += 1;
+    }
+    const nested = children.length
+      ? renderTocLevel(children, 0, Math.min(...children.map((c) => c.level)), link)
+      : '';
+    parts.push(`<li>${link(self)}${nested}</li>`);
+  }
+
+  return parts.length ? `<ul class="jira-toc-list">${parts.join('')}</ul>` : '';
+}
+
+function clampLevel(value: string | undefined, fallback: number): number {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 6) return fallback;
+  return parsed;
 }
 
 function slugify(text: string): string {

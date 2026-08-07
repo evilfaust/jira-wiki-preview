@@ -22,7 +22,7 @@ will render. Write the text, then paste it into Jira.
 - **Syntax highlighting** in the editor *and* in the preview, including code inside
   `{code:java}`, `{code:sql}`, `{code:json}` and ~45 other languages.
 - **Formatting shortcuts**: `Ctrl+B` bold, `Ctrl+I` italic, `Ctrl+Shift+M` monospace,
-  `Ctrl+K` link. Pressing again removes the formatting.
+  `Ctrl+Alt+K` link. Pressing again removes the formatting.
 - **Snippets** for the constructs you actually type: `h1`, `code`, `table`, `panel`,
   `info`, `note`, `tip`, `warning`, `link`, `status`, and more.
 - **Scratch document**: the `Jira: New Jira document` command opens an empty file with
@@ -32,9 +32,8 @@ will render. Write the text, then paste it into Jira.
   monospace, URLs, link targets, macro names and issue keys are skipped, so only prose
   is checked. Quick fixes offer replacements and *add to dictionary*.
 
-> The command titles and settings descriptions are currently in Russian; the extension
-> itself works the same in any locale. Translations are welcome — see
-> [Contributing](#contributing).
+The interface is English by default and switches to Russian when VS Code itself runs in
+Russian. Other languages are welcome — see [Contributing](#contributing).
 
 ## Supported syntax
 
@@ -47,6 +46,7 @@ will render. Write the text, then paste it into Jira.
 | Tables | `\|\|header\|\|` and `\|cell\|` |
 | Blocks | `{code:lang\|title=…}`, `{noformat}`, `{quote}`, `bq.`, `{panel:title=…}` |
 | Message macros | `{info}`, `{note}`, `{tip}`, `{warning}` |
+| Table of contents | `{toc}`, `{toc:minLevel=2\|maxLevel=3}`, `{toc:type=flat}` |
 | Links | `[url]`, `[text\|url]`, `[text\|url\|tooltip]`, `[~user]`, `[^attachment]`, `[#anchor]`, `{anchor:name}` |
 | Images | `!file.png!`, `!file.png\|thumbnail!`, `!url\|width=300, align=right!` |
 | Misc | `----` rule, `\\` line break, `---`/`--` dashes |
@@ -91,7 +91,7 @@ Grab the package from the [Releases](https://github.com/evilfaust/jira-wiki-prev
 page, then either use the Extensions view (`…` menu → **Install from VSIX…**) or run:
 
 ```bash
-code --install-extension jira-wiki-preview-0.1.0.vsix
+code --install-extension jira-wiki-preview-0.4.0.vsix
 ```
 
 ## Development
@@ -117,8 +117,10 @@ and the icon by `scripts/gen-icon.js`.
 
 ## Contributing
 
-Issues and pull requests are welcome — in particular, translating the command titles
-and setting descriptions to English via VS Code's `package.nls.json` localization.
+Issues and pull requests are welcome. Adding a language is mechanical: copy
+`package.nls.json` to `package.nls.<locale>.json` for the manifest strings, and
+`l10n/bundle.l10n.ru.json` to `l10n/bundle.l10n.<locale>.json` for runtime messages.
+The tests in `test/l10n.test.ts` check that nothing is missing or orphaned.
 
 ## License
 

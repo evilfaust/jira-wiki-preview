@@ -4,6 +4,26 @@ All notable changes to this extension are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] — 2026-08-07
+
+### Fixed
+
+- Spell checking no longer joins words across an em or en dash: `текст—тире`
+  written without spaces used to become a single token and was always reported as
+  a misspelling. Only real hyphens join words now.
+- `Ctrl+K` / `Cmd+K` no longer shadows VS Code's chord prefix inside Jira files —
+  inserting a link moved to `Ctrl+Alt+K` / `Cmd+Alt+K`. Chords such as
+  `Ctrl+K Ctrl+S` work again.
+
+### Added
+
+- `{toc}` renders a table of contents, with `minLevel`, `maxLevel` and `type=flat`.
+- Heading anchors are now unique: repeated headings get `-2`, `-3` suffixes instead
+  of silently pointing at the first one.
+- Command `Jira: Turn Spell Checking On or Off` for a quick toggle.
+- Localization: English by default, Russian for a Russian VS Code interface. Covers
+  command titles, setting descriptions and runtime messages.
+
 ## [0.3.0] — 2026-08-07
 
 ### Added

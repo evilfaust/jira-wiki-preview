@@ -33,7 +33,9 @@ export class JiraPreviewManager implements vscode.Disposable {
   async showPreview(column: vscode.ViewColumn): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
-      void vscode.window.showInformationMessage('Откройте файл с разметкой Jira, чтобы увидеть превью.');
+      void vscode.window.showInformationMessage(
+        vscode.l10n.t('Open a file with Jira markup to see the preview.'),
+      );
       return;
     }
 
@@ -79,9 +81,9 @@ export class JiraPreviewManager implements vscode.Disposable {
 
 function previewTitle(document: vscode.TextDocument): string {
   const name = document.isUntitled
-    ? 'Черновик'
+    ? vscode.l10n.t('Untitled')
     : document.uri.path.split('/').pop() ?? 'Jira';
-  return `Превью: ${name}`;
+  return vscode.l10n.t('Preview: {0}', name);
 }
 
 function localRoots(

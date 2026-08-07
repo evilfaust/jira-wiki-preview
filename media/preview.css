@@ -470,6 +470,37 @@ table.jira-table th {
   font-weight: 600;
 }
 
+/* --- Оглавление {toc} -------------------------------------------------- */
+.jira-toc {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border: 1px solid var(--jira-border);
+  border-radius: 3px;
+  background: var(--jira-header-bg);
+}
+
+.jira-toc-empty {
+  display: none;
+}
+
+.jira-toc ul.jira-toc-list {
+  margin: 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.jira-toc > ul.jira-toc-list {
+  padding-left: 18px;
+}
+
+.jira-toc li {
+  margin: 2px 0;
+}
+
+.jira-toc-flat a + .jira-toc-sep {
+  color: var(--jira-subtle);
+}
+
 /* --- Прочие элементы -------------------------------------------------- */
 .jira-status {
   display: inline-block;

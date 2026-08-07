@@ -3,7 +3,7 @@ import { SpellClient } from './client.ts';
 import { maskNonProse } from './mask.ts';
 import { extractWords, normalizeWord, type WordLanguage, type WordOptions } from './words.ts';
 
-const DIAGNOSTIC_SOURCE = 'Jira: орфография';
+const DIAGNOSTIC_SOURCE = 'Jira spelling';
 const CHECK_DEBOUNCE_MS = 400;
 const ADD_WORD_COMMAND = 'jira.spell.addWord';
 
@@ -42,6 +42,7 @@ export class SpellChecker implements vscode.Disposable {
         providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
       }),
       vscode.commands.registerCommand(ADD_WORD_COMMAND, (word: string) => this.addWord(word)),
+      vscode.commands.registerCommand('jira.spell.toggle', () => this.toggle()),
     );
 
     this.recheckAll();
@@ -132,7 +133,7 @@ export class SpellChecker implements vscode.Disposable {
         unknown.set(language, new Set(await this.client.check(language, [...words])));
       }
     } catch (error) {
-      this.reportError(error instanceof Error ? error.message : 'Проверка орфографии не удалась');
+      this.reportError(error instanceof Error ? error.message : vscode.l10n.t('Spell checking failed'));
       return;
     }
 
@@ -148,7 +149,7 @@ export class SpellChecker implements vscode.Disposable {
         );
         const diagnostic = new vscode.Diagnostic(
           range,
-          `Возможна опечатка: «${item.word}»`,
+          vscode.l10n.t('Possible misspelling: “{0}”', item.word),
           vscode.DiagnosticSeverity.Information,
         );
         diagnostic.source = DIAGNOSTIC_SOURCE;
@@ -157,6 +158,16 @@ export class SpellChecker implements vscode.Disposable {
       });
 
     this.diagnostics.set(document.uri, diagnostics);
+  }
+
+  private async toggle(): Promise<void> {
+    const config = vscode.workspace.getConfiguration('jira');
+    const next = !config.get<boolean>('spell.enabled', true);
+    await config.update('spell.enabled', next, vscode.ConfigurationTarget.Global);
+    void vscode.window.setStatusBarMessage(
+      next ? vscode.l10n.t('Spell checking is on') : vscode.l10n.t('Spell checking is off'),
+      2500,
+    );
   }
 
   private async addWord(word: string): Promise<void> {
@@ -198,7 +209,7 @@ class SpellActions implements vscode.CodeActionProvider {
       const suggestions = await this.checker.suggest(language, word);
       for (const [index, suggestion] of suggestions.entries()) {
         const action = new vscode.CodeAction(
-          `Заменить на «${suggestion}»`,
+          vscode.l10n.t('Replace with “{0}”', suggestion),
           vscode.CodeActionKind.QuickFix,
         );
         action.edit = new vscode.WorkspaceEdit();
@@ -209,10 +220,10 @@ class SpellActions implements vscode.CodeActionProvider {
       }
 
       const add = new vscode.CodeAction(
-        `Добавить «${word}» в словарь`,
+        vscode.l10n.t('Add “{0}” to the dictionary', word),
         vscode.CodeActionKind.QuickFix,
       );
-      add.command = { command: ADD_WORD_COMMAND, title: 'Добавить в словарь', arguments: [word] };
+      add.command = { command: ADD_WORD_COMMAND, title: vscode.l10n.t('Add to dictionary'), arguments: [word] };
       add.diagnostics = [diagnostic];
       actions.push(add);
     }

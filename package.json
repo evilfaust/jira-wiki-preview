@@ -1,8 +1,8 @@
 {
   "name": "jira-wiki-preview",
   "displayName": "Jira Wiki Markup — Editor & Preview",
-  "description": "Write Jira descriptions and comments in VS Code: syntax highlighting for Jira Wiki Markup and a live side-by-side preview, just like Markdown.",
-  "version": "0.3.0",
+  "description": "%extension.description%",
+  "version": "0.4.0",
   "publisher": "evilfaust",
   "license": "MIT",
   "icon": "media/icons/icon.png",
@@ -33,6 +33,7 @@
     "preview"
   ],
   "main": "./dist/extension.js",
+  "l10n": "./l10n",
   "activationEvents": [
     "onLanguage:jira"
   ],
@@ -72,61 +73,66 @@
     "commands": [
       {
         "command": "jira.showPreviewToSide",
-        "title": "Открыть превью сбоку",
-        "category": "Jira",
+        "title": "%command.showPreviewToSide.title%",
+        "category": "%command.category%",
         "icon": "$(open-preview)"
       },
       {
         "command": "jira.showPreview",
-        "title": "Открыть превью",
-        "category": "Jira",
+        "title": "%command.showPreview.title%",
+        "category": "%command.category%",
         "icon": "$(open-preview)"
       },
       {
         "command": "jira.newDocument",
-        "title": "Новый Jira-документ (черновик)",
-        "category": "Jira",
+        "title": "%command.newDocument.title%",
+        "category": "%command.category%",
         "icon": "$(new-file)"
       },
       {
         "command": "jira.copySource",
-        "title": "Скопировать исходник в буфер обмена",
-        "category": "Jira"
+        "title": "%command.copySource.title%",
+        "category": "%command.category%"
       },
       {
         "command": "jira.toggleBold",
-        "title": "Жирный",
-        "category": "Jira"
+        "title": "%command.toggleBold.title%",
+        "category": "%command.category%"
       },
       {
         "command": "jira.toggleItalic",
-        "title": "Курсив",
-        "category": "Jira"
+        "title": "%command.toggleItalic.title%",
+        "category": "%command.category%"
       },
       {
         "command": "jira.toggleMonospace",
-        "title": "Моноширинный",
-        "category": "Jira"
+        "title": "%command.toggleMonospace.title%",
+        "category": "%command.category%"
       },
       {
         "command": "jira.toggleStrikethrough",
-        "title": "Зачёркнутый",
-        "category": "Jira"
+        "title": "%command.toggleStrikethrough.title%",
+        "category": "%command.category%"
       },
       {
         "command": "jira.insertLink",
-        "title": "Вставить ссылку",
-        "category": "Jira"
+        "title": "%command.insertLink.title%",
+        "category": "%command.category%"
       },
       {
         "command": "jira.insertCodeBlock",
-        "title": "Вставить блок кода",
-        "category": "Jira"
+        "title": "%command.insertCodeBlock.title%",
+        "category": "%command.category%"
       },
       {
         "command": "jira.insertTable",
-        "title": "Вставить таблицу",
-        "category": "Jira"
+        "title": "%command.insertTable.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "jira.spell.toggle",
+        "title": "%command.spell.toggle.title%",
+        "category": "%command.category%"
       }
     ],
     "menus": {
@@ -206,13 +212,13 @@
       },
       {
         "command": "jira.insertLink",
-        "key": "ctrl+k",
-        "mac": "cmd+k",
+        "key": "ctrl+alt+k",
+        "mac": "cmd+alt+k",
         "when": "editorTextFocus && editorLangId == jira"
       }
     ],
     "configuration": {
-      "title": "Jira Wiki Markup",
+      "title": "%configuration.title%",
       "properties": {
         "jira.preview.theme": {
           "type": "string",
@@ -221,53 +227,53 @@
             "editor"
           ],
           "enumDescriptions": [
-            "Цвета как в интерфейсе Jira (светлая/тёмная в зависимости от темы VS Code)",
-            "Цвета текущей темы VS Code"
+            "%configuration.preview.theme.enum0%",
+            "%configuration.preview.theme.enum1%"
           ],
           "default": "jira",
-          "description": "Оформление панели превью."
+          "description": "%configuration.preview.theme.description%"
         },
         "jira.preview.fontSize": {
           "type": "number",
           "default": 14,
           "minimum": 8,
           "maximum": 40,
-          "description": "Размер шрифта в превью (px)."
+          "description": "%configuration.preview.fontSize.description%"
         },
         "jira.preview.fontFamily": {
           "type": "string",
           "default": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-          "description": "Шрифт текста в превью."
+          "description": "%configuration.preview.fontFamily.description%"
         },
         "jira.preview.maxWidth": {
           "type": "number",
           "default": 0,
-          "description": "Максимальная ширина колонки текста в превью в px. 0 — без ограничения."
+          "description": "%configuration.preview.maxWidth.description%"
         },
         "jira.preview.scrollPreviewWithEditor": {
           "type": "boolean",
           "default": true,
-          "description": "Синхронизировать скролл превью со скроллом редактора."
+          "description": "%configuration.preview.scrollPreviewWithEditor.description%"
         },
         "jira.preview.scrollEditorWithPreview": {
           "type": "boolean",
           "default": true,
-          "description": "Синхронизировать скролл редактора со скроллом превью."
+          "description": "%configuration.preview.scrollEditorWithPreview.description%"
         },
         "jira.preview.doubleClickToSwitchToEditor": {
           "type": "boolean",
           "default": true,
-          "description": "Двойной клик в превью переводит курсор на соответствующую строку в редакторе."
+          "description": "%configuration.preview.doubleClickToSwitchToEditor.description%"
         },
         "jira.preview.highlightCode": {
           "type": "boolean",
           "default": true,
-          "description": "Подсвечивать синтаксис внутри блоков {code:язык}. Без указания языка код показывается без подсветки."
+          "description": "%configuration.preview.highlightCode.description%"
         },
         "jira.spell.enabled": {
           "type": "boolean",
           "default": true,
-          "description": "Проверять орфографию в файлах Jira. Словари загружаются в отдельный процесс при первой проверке и выгружаются после 5 минут простоя."
+          "description": "%configuration.spell.enabled.description%"
         },
         "jira.spell.languages": {
           "type": "array",
@@ -283,7 +289,7 @@
             "en"
           ],
           "uniqueItems": true,
-          "description": "Языки проверки. Язык слова определяется по алфавиту, поэтому русский и английский текст можно смешивать."
+          "description": "%configuration.spell.languages.description%"
         },
         "jira.spell.userWords": {
           "type": "array",
@@ -291,24 +297,24 @@
             "type": "string"
           },
           "default": [],
-          "description": "Слова, которые считать правильными. Пополняется быстрым исправлением «Добавить в словарь»."
+          "description": "%configuration.spell.userWords.description%"
         },
         "jira.spell.minWordLength": {
           "type": "number",
           "default": 3,
           "minimum": 1,
           "maximum": 10,
-          "description": "Слова короче этой длины не проверяются — обычно это сокращения."
+          "description": "%configuration.spell.minWordLength.description%"
         },
         "jira.spell.ignoreAllCaps": {
           "type": "boolean",
           "default": true,
-          "description": "Не проверять слова, написанные заглавными буквами: ТЗ, API, СУБД."
+          "description": "%configuration.spell.ignoreAllCaps.description%"
         },
         "jira.baseUrl": {
           "type": "string",
           "default": "",
-          "description": "Базовый URL вашего Jira (например https://company.atlassian.net). Используется для ссылок на задачи вида ABC-123 и упоминаний [~user]."
+          "description": "%configuration.baseUrl.description%"
         }
       }
     }

@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Проверка типов
+        run: npm run typecheck
+
+      - name: Тесты
+        run: npm test
+
+      - name: Сборка пакета
+        run: npm run vsix
+
+      # Готовый .vsix можно скачать из артефактов сборки —
+      # это самый простой способ поставить свежую версию на другую машину.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vsix
+          path: '*.vsix'
+          if-no-files-found: error

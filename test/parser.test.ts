@@ -232,6 +232,37 @@ test('эмотиконы: синонимы и границы слова', () => 
   assert.equal(render('(*r)').match(/<svg/g)?.length, 1);
 });
 
+test('оглавление {toc}', () => {
+  const html = render('{toc}\n\nh1. Первый\n\nh2. Вложенный\n\nh1. Второй');
+  assert.match(html, /<div class="jira-toc" data-line="0">/);
+  assert.match(html, /<a href="#первый">Первый<\/a><ul class="jira-toc-list"><li><a href="#вложенный">/);
+  // Оглавление стоит выше заголовков, но собирает их все.
+  assert.match(html, /<a href="#второй">Второй<\/a>/);
+});
+
+test('{toc} с параметрами', () => {
+  assert.match(render('{toc:type=flat}\n\nh1. А\n\nh2. Б'), /class="jira-toc jira-toc-flat"/);
+  const levels = render('{toc:minLevel=2|maxLevel=2}\n\nh1. А\n\nh2. Б\n\nh3. В');
+  assert.match(levels, /href="#б"/);
+  assert.doesNotMatch(levels, /href="#а"/);
+  assert.doesNotMatch(levels, /href="#в"/);
+});
+
+test('{toc} без заголовков не ломается', () => {
+  assert.match(render('{toc}'), /class="jira-toc jira-toc-empty"/);
+});
+
+test('одинаковые заголовки получают разные якоря', () => {
+  const html = render('h1. Итог\n\nh1. Итог\n\nh1. Итог');
+  assert.match(html, /id="итог"/);
+  assert.match(html, /id="итог-2"/);
+  assert.match(html, /id="итог-3"/);
+});
+
+test('заголовок без букв всё равно получает якорь', () => {
+  assert.match(render('h2. !!!'), /id="heading-1"/);
+});
+
 test('пустой документ', () => {
   assert.equal(render(''), '');
   assert.equal(render('\n\n\n'), '');

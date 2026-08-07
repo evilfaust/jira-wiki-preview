@@ -2,7 +2,7 @@
   "name": "jira-wiki-preview",
   "displayName": "Jira Wiki Markup — Editor & Preview",
   "description": "Write Jira descriptions and comments in VS Code: syntax highlighting for Jira Wiki Markup and a live side-by-side preview, just like Markdown.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "evilfaust",
   "license": "MIT",
   "icon": "media/icons/icon.png",
@@ -33,7 +33,9 @@
     "preview"
   ],
   "main": "./dist/extension.js",
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:jira"
+  ],
   "contributes": {
     "languages": [
       {
@@ -262,6 +264,47 @@
           "default": true,
           "description": "Подсвечивать синтаксис внутри блоков {code:язык}. Без указания языка код показывается без подсветки."
         },
+        "jira.spell.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Проверять орфографию в файлах Jira. Словари загружаются в отдельный процесс при первой проверке и выгружаются после 5 минут простоя."
+        },
+        "jira.spell.languages": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ru",
+              "en"
+            ]
+          },
+          "default": [
+            "ru",
+            "en"
+          ],
+          "uniqueItems": true,
+          "description": "Языки проверки. Язык слова определяется по алфавиту, поэтому русский и английский текст можно смешивать."
+        },
+        "jira.spell.userWords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Слова, которые считать правильными. Пополняется быстрым исправлением «Добавить в словарь»."
+        },
+        "jira.spell.minWordLength": {
+          "type": "number",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Слова короче этой длины не проверяются — обычно это сокращения."
+        },
+        "jira.spell.ignoreAllCaps": {
+          "type": "boolean",
+          "default": true,
+          "description": "Не проверять слова, написанные заглавными буквами: ТЗ, API, СУБД."
+        },
         "jira.baseUrl": {
           "type": "string",
           "default": "",
@@ -283,12 +326,16 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
+    "@types/nspell": "^2.1.6",
     "@types/vscode": "^1.85.0",
     "@vscode/vsce": "^3.2.0",
     "esbuild": "^0.24.0",
     "typescript": "^5.7.0"
   },
   "dependencies": {
-    "highlight.js": "^11.11.1"
+    "dictionary-en": "^4.0.0",
+    "dictionary-ru": "^3.0.0",
+    "highlight.js": "^11.11.1",
+    "nspell": "^2.1.5"
   }
 }

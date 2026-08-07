@@ -8,10 +8,12 @@ import {
   toggleWrap,
 } from './commands.ts';
 import { JiraPreviewManager } from './preview/manager.ts';
+import { SpellChecker } from './spell/provider.ts';
 
 export function activate(context: vscode.ExtensionContext): void {
   const manager = new JiraPreviewManager(context);
   context.subscriptions.push(manager);
+  context.subscriptions.push(new SpellChecker(context));
 
   const register = (command: string, callback: () => unknown) =>
     context.subscriptions.push(vscode.commands.registerCommand(command, callback));

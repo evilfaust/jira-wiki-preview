@@ -28,6 +28,9 @@ will render. Write the text, then paste it into Jira.
 - **Scratch document**: the `Jira: New Jira document` command opens an empty file with
   the preview already open — write, then copy into Jira.
 - **Issue links**: set `jira.baseUrl` and `ABC-123` / `[~user]` become clickable.
+- **Spell checking** for Russian and English that understands the markup: code blocks,
+  monospace, URLs, link targets, macro names and issue keys are skipped, so only prose
+  is checked. Quick fixes offer replacements and *add to dictionary*.
 
 > The command titles and settings descriptions are currently in Russian; the extension
 > itself works the same in any locale. Translations are welcome — see
@@ -62,6 +65,20 @@ will render. Write the text, then paste it into Jira.
 | `jira.preview.doubleClickToSwitchToEditor` | `true` | Double-click in preview jumps to the source line |
 | `jira.preview.highlightCode` | `true` | Syntax highlighting inside `{code:lang}` blocks |
 | `jira.baseUrl` | `""` | Your Jira base URL, e.g. `https://company.atlassian.net` |
+| `jira.spell.enabled` | `true` | Check spelling in Jira files |
+| `jira.spell.languages` | `["ru","en"]` | Languages to check; the alphabet of each word decides which dictionary is used |
+| `jira.spell.userWords` | `[]` | Words to always accept |
+| `jira.spell.minWordLength` | `3` | Skip words shorter than this |
+| `jira.spell.ignoreAllCaps` | `true` | Skip ALL-CAPS words — usually acronyms |
+
+### About the spell checker
+
+Dictionaries are hunspell dictionaries read through [nspell](https://github.com/wooorm/nspell).
+They run in a **helper process**, not in the extension host: the Russian dictionary needs
+roughly 250 MB of memory and about a second to build. The process starts on the first
+check and shuts itself down after five minutes of inactivity, so the cost is only paid
+while you are actually writing Jira text. Suggestions are computed lazily, when you open
+the quick-fix menu.
 
 ## File types
 
@@ -106,6 +123,9 @@ and setting descriptions to English via VS Code's `package.nls.json` localizatio
 ## License
 
 [MIT](LICENSE).
+
+Bundled dictionaries keep their own licenses, shipped alongside them in
+`dictionaries/<lang>/license`: Russian — BSD-3-Clause, English — MIT and BSD.
 
 Jira is a trademark of Atlassian. This extension is an independent project and is not
 affiliated with, endorsed by, or sponsored by Atlassian.

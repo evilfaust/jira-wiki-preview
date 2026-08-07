@@ -1,5 +1,7 @@
 node_modules/
 dist/
 out/
+# Копируются из node_modules при сборке (esbuild.js)
+dictionaries/
 *.vsix
 .DS_Store

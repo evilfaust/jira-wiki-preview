@@ -4,6 +4,24 @@ All notable changes to this extension are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] — 2026-08-07
+
+### Added
+
+- Spell checking for Russian and English, aware of the markup: code blocks,
+  `{{monospace}}`, URLs, link targets, macro names, image names, issue keys and
+  `[~user]` mentions are skipped, so only prose is checked. Misspellings appear as
+  hints with quick fixes offering replacements and *add to dictionary*.
+- Settings `jira.spell.enabled`, `jira.spell.languages`, `jira.spell.userWords`,
+  `jira.spell.minWordLength`, `jira.spell.ignoreAllCaps`.
+
+### Notes
+
+- Dictionaries (hunspell, via `nspell`) run in a helper process, not in the extension
+  host: the Russian dictionary needs about 250 MB and a second to build. The process
+  starts on the first check and shuts down after five minutes of inactivity.
+- The extension now activates when a Jira file is opened, not only on a command.
+
 ## [0.2.0] — 2026-08-07
 
 ### Changed

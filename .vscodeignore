@@ -6,6 +6,11 @@ out/**
 node_modules/**
 samples/**
 scripts/**
+# Скриншот нужен только README: vsce подменяет относительный путь на ссылку
+# в GitHub, поэтому в пакете он лежал бы мёртвым грузом.
+media/screenshot.png
+# Исходник иконки; в пакет идёт готовый media/icons/icon.png
+media/icons/extension-icon.svg
 esbuild.js
 tsconfig.json
 .gitignore

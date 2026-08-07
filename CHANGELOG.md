@@ -11,8 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - The README now opens with a screenshot of the editor and the live preview side
   by side, taken from the `samples/demo.jira` file that ships with the repository.
 
-The extension itself is byte-for-byte identical to 0.4.2 — this release carries
-documentation only.
+No functional changes to the extension. The packaged `.vsix` is also slightly
+smaller: the README screenshot and the icon source are no longer shipped inside it,
+since the Marketplace pulls the screenshot from GitHub anyway.
 
 ## [0.4.2] — 2026-08-07
 

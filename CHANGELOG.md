@@ -4,6 +4,22 @@ All notable changes to this extension are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.2] — 2026-08-07
+
+### Fixed
+
+- Nesting of list items no longer depends on where a list block starts. When a table
+  or a paragraph interrupted a list, the following `**` items ended up on different
+  levels: the first became a top-level bullet and the second its child. The level now
+  follows the markers alone, so identical markers are always siblings.
+- Skipping a level (`*` straight to `***`) split the deeper items into separate
+  lists instead of keeping them together.
+
+### Changed
+
+- The README now documents every construct the extension converts, including the full
+  emoticon set.
+
 ## [0.4.1] — 2026-08-07
 
 ### Fixed

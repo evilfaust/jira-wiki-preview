@@ -175,7 +175,7 @@ function renderBlocks(
         items.push({ marker: match[2], text: match[3], line: offset + j });
         j += 1;
       }
-      out.push(renderList(buildListTree(items), opts));
+      out.push(renderList(buildListTree(items), opts, true));
       i = j;
       continue;
     }
@@ -509,31 +509,40 @@ interface ListNode extends ListSource {
   children: ListNode[];
 }
 
+/**
+ * Строит дерево списка по длине маркера.
+ *
+ * Уровень определяется только маркером, а не порядком элементов: список может
+ * начинаться с любой глубины, если предыдущий прервали таблицей или абзацем.
+ * Поэтому одинаковые маркеры всегда оказываются соседями.
+ */
 function buildListTree(items: ListSource[]): ListNode[] {
   const roots: ListNode[] = [];
-  /** levels[k] — последний узел на глубине k+1. */
-  const levels: ListNode[] = [];
+  /** stack[k] — последний узел глубины k+1; дырка означает пропущенный уровень. */
+  const stack: (ListNode | undefined)[] = [];
 
   for (const item of items) {
+    const depth = Math.max(1, item.marker.length);
     const node: ListNode = { ...item, children: [] };
-    const depth = item.marker.length;
-    if (depth <= 1 || levels.length === 0) {
-      roots.push(node);
-      levels.length = 0;
-      levels[0] = node;
-      continue;
+
+    stack.length = Math.min(stack.length, depth - 1);
+    // Уровень могли пропустить (`*` сразу к `***`) — тогда в стеке дырка,
+    // и родителем становится ближайший существующий предок.
+    let parent: ListNode | undefined;
+    for (let level = stack.length - 1; level >= 0 && !parent; level -= 1) {
+      parent = stack[level];
     }
-    const parent = levels[Math.min(depth, levels.length + 1) - 2];
     if (parent) parent.children.push(node);
     else roots.push(node);
-    levels.length = Math.min(depth, levels.length + 1);
-    levels[levels.length - 1] = node;
+
+    stack[depth - 1] = node;
+    stack.length = depth;
   }
 
   return roots;
 }
 
-function renderList(nodes: ListNode[], opts: RenderOptions): string {
+function renderList(nodes: ListNode[], opts: RenderOptions, outermost = false): string {
   if (!nodes.length) return '';
   const out: string[] = [];
   let index = 0;
@@ -551,7 +560,13 @@ function renderList(nodes: ListNode[], opts: RenderOptions): string {
       index += 1;
     }
     const tag = kind === 'ordered' ? 'ol' : 'ul';
-    const cls = kind === 'dash' ? ' class="jira-dash-list"' : '';
+    const classes = [
+      kind === 'dash' ? 'jira-dash-list' : '',
+      // Список, начинающийся глубже первого уровня, отбиваем отступом —
+      // иначе после таблицы `**` визуально теряет вложенность.
+      outermost && depth > 1 ? `jira-list-depth-${Math.min(depth, 6)}` : '',
+    ].filter(Boolean);
+    const cls = classes.length ? ` class="${classes.join(' ')}"` : '';
     const items = group
       .map(
         (node) =>

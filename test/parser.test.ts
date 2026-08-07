@@ -43,6 +43,32 @@ test('маркированный и нумерованный списки', () =
   assert.match(render('# раз\n# два'), /<ol><li[^>]*>раз<\/li><li[^>]*>два<\/li><\/ol>/);
 });
 
+test('одинаковые маркеры всегда на одном уровне', () => {
+  // Таблица прерывает список, и следующий блок начинается сразу с `**`.
+  const html = render('* верх\n||a||b||\n|1|2|\n** первый\n** второй\n*** глубже\n*** ещё глубже');
+  assert.match(
+    html,
+    /<ul class="jira-list-depth-2"><li[^>]*>первый<\/li><li[^>]*>второй<ul><li[^>]*>глубже<\/li><li[^>]*>ещё глубже<\/li><\/ul><\/li><\/ul>/,
+  );
+});
+
+test('список, начатый с глубины, получает отступ', () => {
+  assert.match(render('** сразу второй уровень'), /<ul class="jira-list-depth-2">/);
+  assert.match(render('*** сразу третий'), /<ul class="jira-list-depth-3">/);
+  // Обычный список отступа не получает.
+  assert.doesNotMatch(render('* обычный'), /jira-list-depth/);
+  // Вложенные списки отступ не дублируют — они уже внутри <li>.
+  assert.equal(render('* a\n** b').match(/jira-list-depth/g), null);
+});
+
+test('пропуск уровня не ломает соседство', () => {
+  const html = render('* a\n*** глубоко\n*** рядом\n* b');
+  assert.match(
+    html,
+    /<li[^>]*>a<ul><li[^>]*>глубоко<\/li><li[^>]*>рядом<\/li><\/ul><\/li><li[^>]*>b<\/li>/,
+  );
+});
+
 test('смешанная вложенность списков', () => {
   const html = render('* пункт\n#* подпункт'.replace('#*', '*#'));
   assert.match(html, /<ul><li[^>]*>пункт<ol><li[^>]*>подпункт<\/li><\/ol><\/li><\/ul>/);

@@ -37,20 +37,116 @@ Russian. Other languages are welcome — see [Contributing](#contributing).
 
 ## Supported syntax
 
-| Category | Markup |
+Everything below is recognised by the editor's highlighting and rendered in the preview.
+
+### Headings and paragraphs
+
+| Markup | Result |
 | --- | --- |
-| Headings | `h1.` … `h6.` |
-| Text effects | `*bold*`, `_italic_`, `-strikethrough-`, `+underline+`, `^sup^`, `~sub~`, `??citation??`, `{{monospace}}` |
-| Color and status | `{color:red}…{color}`, `{status:colour=Green\|title=Done}` |
-| Lists | `*`, `#`, `-` with arbitrary nesting and mixing (`*#`) |
-| Tables | `\|\|header\|\|` and `\|cell\|` |
-| Blocks | `{code:lang\|title=…}`, `{noformat}`, `{quote}`, `bq.`, `{panel:title=…}` — `{code}` also works inside a line, e.g. in a table cell |
-| Message macros | `{info}`, `{note}`, `{tip}`, `{warning}` |
-| Table of contents | `{toc}`, `{toc:minLevel=2\|maxLevel=3}`, `{toc:type=flat}` |
-| Links | `[url]`, `[text\|url]`, `[text\|url\|tooltip]`, `[~user]`, `[^attachment]`, `[#anchor]`, `{anchor:name}` |
-| Images | `!file.png!`, `!file.png\|thumbnail!`, `!url\|width=300, align=right!` |
-| Misc | `----` rule, `\\` line break, `---`/`--` dashes |
-| Emoticons | `(+) (-) (!) (/) (x) (?) (i) (y) (n) (on) (off) (*) (*r) (*g) (*b) (flag) (flagoff) :) :( :D ;) :P` — drawn as the classic Atlassian icons, not system emoji |
+| `h1.` … `h6.` | Headings, each with a unique anchor |
+| Blank line | Starts a new paragraph |
+| Single newline | Line break inside the paragraph |
+| `\\` | Forced line break |
+| `----` (4 or more) | Horizontal rule |
+| `---` | Em dash — |
+| `--` | En dash – |
+| `\*` | Escapes the next character, so it is not treated as markup |
+
+### Text effects
+
+| Markup | Result |
+| --- | --- |
+| `*bold*` | **bold** |
+| `_italic_` | *italic* |
+| `-strikethrough-` | ~~strikethrough~~ |
+| `+underline+` | underlined |
+| `^superscript^` | superscript, as in `x^2^` |
+| `~subscript~` | subscript, as in `H~2~O` |
+| `??citation??` | citation |
+| `{{monospace}}` | `monospace` |
+| `{color:red}text{color}` | Coloured text; also accepts `#RRGGBB` |
+| `{status:colour=Green\|title=Done}` | Coloured status badge |
+
+### Lists
+
+| Markup | Result |
+| --- | --- |
+| `* item` | Bulleted list |
+| `# item` | Numbered list |
+| `- item` | Dash-marked list |
+| `**`, `***`, … | Nesting level — the number of markers is the depth |
+| `*#`, `#*` | Mixed nesting: the last marker sets the list type |
+
+A table or a paragraph between items ends the list, exactly as in Jira. The level still
+follows the markers, so `**` after a table stays a second-level item.
+
+### Tables
+
+| Markup | Result |
+| --- | --- |
+| `\|\|header\|\|header\|\|` | Header row |
+| `\|cell\|cell\|` | Body row |
+
+A `\|` inside `[…]` or `{…}` does not split the cell, so links and macros with parameters
+can be used inside cells.
+
+### Blocks
+
+| Markup | Result |
+| --- | --- |
+| `{code}` … `{code}` | Code block |
+| `{code:java}` … `{code}` | Code block with syntax highlighting |
+| `{code:java\|title=Foo.java}` | Code block with a title |
+| `{noformat}` … `{noformat}` | Text without any formatting |
+| `{quote}` … `{quote}` | Block quote |
+| `bq. text` | Single-line quote |
+| `{panel:title=…}` … `{panel}` | Panel; also accepts `borderStyle`, `borderColor`, `borderWidth`, `bgColor`, `titleBGColor` |
+| `{info}`, `{note}`, `{tip}`, `{warning}` | Coloured message blocks, each accepting `title=` |
+| `{toc}` | Table of contents; accepts `minLevel`, `maxLevel`, `type=flat` |
+| `{anchor:name}` | Anchor to link to from elsewhere in the document |
+
+`{code}` and `{noformat}` also work inside a line — most often in a table cell, as in
+`| {code:java}$code = "sbp";{code} |`.
+
+### Links and images
+
+| Markup | Result |
+| --- | --- |
+| `[https://example.com]` | Link showing the address |
+| `[text\|https://example.com]` | Link with a label |
+| `[text\|https://example.com\|tooltip]` | Link with a tooltip |
+| `[~username]` | User mention |
+| `[^attachment.pdf]` | Attachment |
+| `[#anchor]` | Link to an anchor in the document |
+| `https://example.com` | A bare address becomes a link |
+| `ABC-123` | Issue key becomes a link once `jira.baseUrl` is set |
+| `!image.png!` | Image |
+| `!image.png\|thumbnail!` | Thumbnail |
+| `!image.png\|width=300, align=right!` | Also accepts `height`, `border`, `vspace`, `hspace`, `alt`, `title` |
+
+Local image paths are resolved relative to the file being previewed.
+
+### Emoticons
+
+Rendered as the classic Atlassian icons rather than system emoji, so the preview matches
+what Jira draws.
+
+| Markup | Icon | Markup | Icon |
+| --- | --- | --- | --- |
+| `(+)` | green circle with a plus | `(y)` | thumbs up |
+| `(-)` | red square with a minus | `(n)` | thumbs down |
+| `(!)` | amber warning triangle | `(on)` | lit light bulb |
+| `(/)` | green check mark | `(off)` | unlit light bulb |
+| `(x)` | red cross | `(*)`, `(*y)` | yellow star |
+| `(i)` | blue information mark | `(*r)` | red star |
+| `(?)` | blue question mark | `(*g)` | green star |
+| `(flag)` | red flag | `(*b)` | blue star |
+| `(flagoff)` | grey flag | | |
+| `:)` | smiling face | `:(` | sad face |
+| `:D` | grinning face | `;)` | winking face |
+| `:P` | face with tongue out | | |
+
+`:-)`, `:-(`, `;-)` and the uppercase `(Y)`, `(N)`, `(I)`, `(X)` are accepted as well.
 
 ## Settings
 

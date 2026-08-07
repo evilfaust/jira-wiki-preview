@@ -193,6 +193,23 @@ ul.jira-dash-list {
   list-style-type: '–  ';
 }
 
+/* Список, начатый маркером глубже первого уровня (например, после таблицы). */
+.jira-list-depth-2 {
+  padding-left: 52px;
+}
+.jira-list-depth-3 {
+  padding-left: 78px;
+}
+.jira-list-depth-4 {
+  padding-left: 104px;
+}
+.jira-list-depth-5 {
+  padding-left: 130px;
+}
+.jira-list-depth-6 {
+  padding-left: 156px;
+}
+
 /* --- Моноширинный текст и код ---------------------------------------- */
 code.jira-mono,
 code.jira-code-inline {

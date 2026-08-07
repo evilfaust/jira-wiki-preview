@@ -72,19 +72,20 @@ if (tryRun('gh', ['release', 'view', tag])) {
 
 // --- Описание релиза из CHANGELOG ---------------------------------------
 const changelog = fs.readFileSync(path.join(root, 'CHANGELOG.md'), 'utf8');
-const section = new RegExp(
-  `^## \\[${version.replace(/\./g, '\\.')}\\][^\\n]*\\n([\\s\\S]*?)(?=^## \\[|\\z)`,
-  'm',
-).exec(changelog);
+// Разбором по заголовкам, а не одной регуляркой: у последнего раздела нет
+// следующего `## [`, и якорь конца текста тут легко поставить неверно.
+const sections = changelog.split(/^## \[/m).slice(1);
+const section = sections.find((part) => part.startsWith(`${version}]`));
+const body = section ? section.slice(section.indexOf('\n') + 1).trim() : '';
 
-if (!section || !section[1].trim()) {
+if (!body) {
   fail(
     `В CHANGELOG.md нет раздела для версии ${version}.`,
     `Добавьте заголовок вида: ## [${version}] — ГГГГ-ММ-ДД`,
   );
 }
 
-const notes = `${section[1].trim()}
+const notes = `${body}
 
 ## Install
 

@@ -18,7 +18,9 @@ will render. Write the text, then paste it into Jira.
 ## Features
 
 - **Live preview** (`Ctrl+Shift+V` / `Cmd+Shift+V`) styled after the Jira UI, with light
-  and dark palettes — or your current VS Code theme colors.
+  and dark palettes — or your current VS Code theme colors. It follows the active editor:
+  switch to another Jira file and the preview switches with you, so there is one preview
+  panel rather than one per file.
 - **Two-way scroll sync** between editor and preview, and double-click in the preview to
   jump to the corresponding source line.
 - **Syntax highlighting** in the editor *and* in the preview, including code inside

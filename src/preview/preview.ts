@@ -27,37 +27,102 @@ export class JiraPreview implements vscode.Disposable {
   private lastEditorScrollAt = 0;
   private lastPreviewScrollAt = 0;
   private disposed = false;
+  /**
+   * Webview принимает сообщения только после того, как загрузит свой скрипт;
+   * отправленное раньше VS Code не ставит в очередь, а молча теряет. Поэтому
+   * первую отрисовку заказывает сам webview сообщением `ready`.
+   */
+  private ready = false;
+
+  /**
+   * Не readonly: если файл закрыть и открыть заново, VS Code создаёт новый
+   * TextDocument, а прежний навсегда остаётся с текстом на момент закрытия.
+   * Ссылку приходится обновлять, иначе превью рисует мёртвый объект.
+   */
+  private document: vscode.TextDocument;
 
   constructor(
     private readonly panel: vscode.WebviewPanel,
-    private readonly document: vscode.TextDocument,
+    document: vscode.TextDocument,
     private readonly context: vscode.ExtensionContext,
   ) {
-    this.panel.webview.html = this.buildShell();
+    this.document = document;
+    this.reload();
 
     this.disposables.push(
       vscode.workspace.onDidChangeTextDocument((event) => {
-        if (event.document.uri.toString() === this.document.uri.toString()) this.scheduleUpdate();
+        if (!this.isOurs(event.document)) return;
+        // Событие приносит живой документ — берём его вместо своей ссылки.
+        this.document = event.document;
+        this.scheduleUpdate();
       }),
       vscode.workspace.onDidSaveTextDocument((doc) => {
-        if (doc.uri.toString() === this.document.uri.toString()) this.update();
+        if (!this.isOurs(doc)) return;
+        this.document = doc;
+        this.update();
+      }),
+      vscode.workspace.onDidOpenTextDocument((doc) => {
+        // Файл открыли заново после закрытия: подхватываем новый объект.
+        if (!this.isOurs(doc)) return;
+        this.document = doc;
+        this.update();
       }),
       vscode.workspace.onDidChangeConfiguration((event) => {
-        if (event.affectsConfiguration('jira')) {
-          this.panel.webview.html = this.buildShell();
-          this.update();
-        }
+        // Смена настроек перестраивает шелл, а это перезагружает webview:
+        // ждём от него нового `ready`, иначе отрисовка уйдёт в никуда.
+        if (event.affectsConfiguration('jira')) this.reload();
       }),
       vscode.window.onDidChangeTextEditorVisibleRanges((event) => this.onEditorScroll(event)),
+      // Пока панель скрыта, сообщения могут не дойти — освежаем при возврате.
+      this.panel.onDidChangeViewState(() => {
+        if (this.panel.visible) this.update();
+      }),
       this.panel.webview.onDidReceiveMessage((message) => this.onMessage(message)),
     );
 
     this.panel.onDidDispose(() => this.dispose());
-    this.update();
+  }
+
+  /** Пересобирает разметку панели; отрисовку закажет `ready` от webview. */
+  private reload(): void {
+    this.ready = false;
+    this.panel.webview.html = this.buildShell();
   }
 
   reveal(column: vscode.ViewColumn): void {
     this.panel.reveal(column, true);
+  }
+
+  /**
+   * Переключает превью на другой документ — панель следует за редактором.
+   * Тот же файл не перезагружает панель, чтобы не терять позицию скролла.
+   */
+  bind(document: vscode.TextDocument): void {
+    if (this.disposed) return;
+
+    if (this.isOurs(document)) {
+      // Тот же файл: объект мог пересоздаться, содержимое — измениться.
+      this.document = document;
+      this.update();
+      return;
+    }
+
+    this.document = document;
+    this.panel.title = previewTitle(document);
+
+    // Присваивание options само по себе перезагружает webview, поэтому трогаем
+    // их только когда набор корней действительно изменился — обычно соседние
+    // файлы лежат в одной папке, и лишней перезагрузки не будет.
+    const roots = localRoots(this.context, document);
+    if (!sameRoots(this.panel.webview.options.localResourceRoots, roots)) {
+      this.panel.webview.options = { enableScripts: true, localResourceRoots: roots };
+    }
+    this.reload();
+  }
+
+  /** Закрывает панель; отписка произойдёт через onDidDispose. */
+  close(): void {
+    this.panel.dispose();
   }
 
   dispose(): void {
@@ -87,8 +152,20 @@ export class JiraPreview implements vscode.Disposable {
     this.updateTimer = setTimeout(() => this.update(), UPDATE_DEBOUNCE_MS);
   }
 
+  private isOurs(document: vscode.TextDocument): boolean {
+    return document.uri.toString() === this.document.uri.toString();
+  }
+
+  /** Живой документ с тем же URI, если VS Code успел пересоздать наш. */
+  private refreshDocument(): void {
+    const key = this.document.uri.toString();
+    const live = vscode.workspace.textDocuments.find((doc) => doc.uri.toString() === key);
+    if (live) this.document = live;
+  }
+
   private update(): void {
-    if (this.disposed) return;
+    if (this.disposed || !this.ready) return;
+    this.refreshDocument();
     const settings = this.settings();
 
     let html: string;
@@ -133,6 +210,13 @@ export class JiraPreview implements vscode.Disposable {
   private onMessage(message: unknown): void {
     const data = message as { type?: string; line?: number } | undefined;
     if (!data?.type) return;
+
+    // Webview загрузился и готов принимать сообщения — только теперь рисуем.
+    if (data.type === 'ready') {
+      this.ready = true;
+      this.update();
+      return;
+    }
 
     if (data.type === 'revealLine' && typeof data.line === 'number') {
       if (!this.settings().scrollEditorWithPreview) return;
@@ -224,4 +308,27 @@ function createNonce(): string {
   let result = '';
   for (let i = 0; i < 32; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
   return result;
+}
+
+function sameRoots(current: readonly vscode.Uri[] | undefined, next: vscode.Uri[]): boolean {
+  if (!current || current.length !== next.length) return false;
+  return current.every((uri, index) => uri.toString() === next[index].toString());
+}
+
+export function previewTitle(document: vscode.TextDocument): string {
+  const name = document.isUntitled
+    ? vscode.l10n.t('Untitled')
+    : (document.uri.path.split('/').pop() ?? 'Jira');
+  return vscode.l10n.t('Preview: {0}', name);
+}
+
+/** Откуда webview разрешено грузить картинки: media, папки проекта и папка файла. */
+export function localRoots(
+  context: vscode.ExtensionContext,
+  document: vscode.TextDocument,
+): vscode.Uri[] {
+  const roots = [vscode.Uri.joinPath(context.extensionUri, 'media')];
+  for (const folder of vscode.workspace.workspaceFolders ?? []) roots.push(folder.uri);
+  if (document.uri.scheme === 'file') roots.push(vscode.Uri.joinPath(document.uri, '..'));
+  return roots;
 }

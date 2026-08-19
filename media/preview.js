@@ -24,7 +24,9 @@
       }
       const previousAnchor = topmostVisibleLine();
       content.innerHTML = message.html || '';
-      if (previousAnchor !== null) scrollToLine(previousAnchor, false);
+      // Восстановление позиции после перерисовки — не пользовательский скролл:
+      // помечаем его как синхронизацию, иначе редактор дёрнется в ответ.
+      if (previousAnchor !== null) scrollToLine(previousAnchor, true);
       return;
     }
 

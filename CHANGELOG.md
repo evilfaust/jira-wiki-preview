@@ -4,6 +4,28 @@ All notable changes to this extension are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.5.1] — 2026-08-19
+
+### Fixed
+
+- The preview went stale and only recovered when it was closed and opened again.
+  It held on to the `TextDocument` object it was created with, and VS Code creates a
+  new one whenever a file is closed and opened — the old object keeps the text it had
+  at closing time forever. Updates were firing all along; they were re-rendering a dead
+  document. The preview now resolves the live document by URI on every render. The
+  `Jira: Open Preview` command made this easy to hit: the panel takes over the editor's
+  tab, so the editor closes and reopening the file left the preview stuck.
+- The preview now follows the active editor, the way the built-in Markdown preview does.
+  It used to be bound to one file for good, so editing a second Jira file changed
+  nothing on screen. There is now one preview panel instead of one per file.
+- The first render could be lost. `postMessage` is dropped when the webview has not
+  finished loading, and the extension posted the initial content immediately after
+  assigning the HTML instead of waiting for the `ready` message the webview already
+  sent. The same race blanked the preview after any `jira.*` setting changed. The
+  preview also refreshes when its panel becomes visible again.
+- Restoring the scroll position after a re-render was reported back to the editor as if
+  the reader had scrolled, so the editor jumped around while typing.
+
 ## [0.5.0] — 2026-08-19
 
 Jira and Confluence share a markup family, but Jira knows far fewer macros. The preview

@@ -1,12 +1,14 @@
 import * as vscode from 'vscode';
-import { JiraPreview, PREVIEW_VIEW_TYPE } from './preview.ts';
+import { JiraPreview, PREVIEW_VIEW_TYPE, localRoots, previewTitle } from './preview.ts';
 
 /**
- * Держит по одной панели превью на документ и решает, какую показать
- * при вызове команды.
+ * Держит единственную панель превью, которая следует за активным редактором:
+ * переключились на другой файл Jira — превью показывает его, как это делает
+ * встроенное превью Markdown. Второй панели не заводим: иначе непонятно,
+ * какая из них должна следовать за редактором.
  */
 export class JiraPreviewManager implements vscode.Disposable {
-  private readonly previews = new Map<string, JiraPreview>();
+  private preview: JiraPreview | undefined;
   private readonly disposables: vscode.Disposable[] = [];
 
   constructor(private readonly context: vscode.ExtensionContext) {
@@ -19,13 +21,17 @@ export class JiraPreviewManager implements vscode.Disposable {
             return;
           }
           try {
-            const uri = vscode.Uri.parse(raw);
-            const document = await vscode.workspace.openTextDocument(uri);
+            const document = await vscode.workspace.openTextDocument(vscode.Uri.parse(raw));
             this.attach(panel, document);
           } catch {
             panel.dispose();
           }
         },
+      }),
+      vscode.window.onDidChangeActiveTextEditor((editor) => {
+        // При переходе в саму панель превью активного редактора нет —
+        // undefined означает «остаёмся на прежнем файле», а не «сбросить».
+        if (editor?.document.languageId === 'jira') this.preview?.bind(editor.document);
       }),
     );
   }
@@ -40,10 +46,9 @@ export class JiraPreviewManager implements vscode.Disposable {
     }
 
     const document = editor.document;
-    const key = document.uri.toString();
-    const existing = this.previews.get(key);
-    if (existing) {
-      existing.reveal(column);
+    if (this.preview) {
+      this.preview.bind(document);
+      this.preview.reveal(column);
       return;
     }
 
@@ -62,38 +67,27 @@ export class JiraPreviewManager implements vscode.Disposable {
   }
 
   private attach(panel: vscode.WebviewPanel, document: vscode.TextDocument): void {
-    const key = document.uri.toString();
     panel.webview.options = {
       enableScripts: true,
       localResourceRoots: localRoots(this.context, document),
     };
+
+    const previous = this.preview;
     const preview = new JiraPreview(panel, document, this.context);
-    this.previews.set(key, preview);
-    panel.onDidDispose(() => this.previews.delete(key));
+    this.preview = preview;
+
+    panel.onDidDispose(() => {
+      if (this.preview === preview) this.preview = undefined;
+    });
+
+    // Сюда попадаем и при восстановлении сессии: если панель превью осталась
+    // с прошлого запуска не одна, лишние закрываем — следует за редактором одна.
+    previous?.close();
   }
 
   dispose(): void {
-    for (const preview of this.previews.values()) preview.dispose();
-    this.previews.clear();
+    this.preview?.dispose();
+    this.preview = undefined;
     for (const disposable of this.disposables) disposable.dispose();
   }
-}
-
-function previewTitle(document: vscode.TextDocument): string {
-  const name = document.isUntitled
-    ? vscode.l10n.t('Untitled')
-    : document.uri.path.split('/').pop() ?? 'Jira';
-  return vscode.l10n.t('Preview: {0}', name);
-}
-
-function localRoots(
-  context: vscode.ExtensionContext,
-  document: vscode.TextDocument,
-): vscode.Uri[] {
-  const roots = [vscode.Uri.joinPath(context.extensionUri, 'media')];
-  for (const folder of vscode.workspace.workspaceFolders ?? []) roots.push(folder.uri);
-  if (document.uri.scheme === 'file') {
-    roots.push(vscode.Uri.joinPath(document.uri, '..'));
-  }
-  return roots;
 }

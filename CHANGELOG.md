@@ -4,6 +4,58 @@ All notable changes to this extension are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] — 2026-08-19
+
+Jira and Confluence share a markup family, but Jira knows far fewer macros. The preview
+rendered both, so it drew a tidy coloured panel where the issue itself will show the bare
+text `{info}`. This release lines the preview up with Jira's own notation help, and spends
+the room freed up by dropping the spell checker on things that help more.
+
+### Removed
+
+- **Spell checking is gone**, along with the bundled dictionaries, the helper process and
+  the five `jira.spell.*` settings. It accounted for 4 MB of the 4.45 MB unpacked package
+  and up to 250 MB of memory for the Russian dictionary, while dedicated extensions such
+  as Code Spell Checker do the same job for every language at once. The package went from
+  913 KB to 108 KB.
+- Snippets `info`, `note`, `tip`, `warning` and `status`, which offered markup Jira does
+  not have. Those macros now come from completion instead, and only in the Confluence
+  dialect.
+
+### Added
+
+- Setting `jira.markup.dialect`. In `jira` mode — the default — the Confluence macros
+  `{toc}`, `{info}`, `{note}`, `{tip}`, `{warning}`, `{status}`, `{section}`, `{column}`
+  and `{excerpt}` stay plain text, exactly as the issue will show them. `confluence` mode
+  keeps the previous behaviour.
+- Markup diagnostics: unclosed `{code}`, `{panel}`, `{color}` and `{{`, a table row with
+  the wrong number of cells, a language in `{code:lang}` that Jira does not know, and a
+  Confluence macro in a file meant for Jira. Quick fixes replace `{info}` with `{panel}`
+  or switch the dialect. Turn them off with `jira.lint.enabled`.
+- Markdown conversion in both directions: commands *Convert from Markdown*, *Convert to
+  Markdown*, *Copy as Markdown* and *Paste as Jira Markup* (`Ctrl+Alt+V` / `Cmd+Alt+V`).
+- Paste with conversion: a URL on the clipboard with text selected offers a ready
+  `[text|url]`, and a clipboard that looks like Markdown offers the converted markup.
+  The ordinary paste stays the default (`jira.paste.smart`).
+- Headings in the Outline view and the breadcrumbs (`Ctrl+Shift+O`); folding for heading
+  sections and for the bodies of block macros.
+- Completion for macro names, code languages, colors and emoticons, aware of the dialect.
+- Command *Align Table Columns*.
+
+### Fixed
+
+- `{code}` and `{noformat}` ignored the `{panel}` parameters — `title`, `bgColor`,
+  `borderStyle`, `borderColor`, `borderWidth`, `titleBGColor` — although Jira's own help
+  states they are valid for both.
+- Embedded media (`!clip.mp4!`, `!song.mp3!`) silently disappeared: attachment parsing
+  accepted nothing but images. Video and audio now render as a player, and the formats a
+  browser no longer plays — Flash, Real and Windows Media — render as a placeholder.
+
+### Changed
+
+- Minimum VS Code version is now 1.97, where the paste API behind `jira.paste.smart`
+  became stable.
+
 ## [0.4.3] — 2026-08-07
 
 ### Changed

@@ -586,7 +586,15 @@ table.jira-table th {
   border: 1px solid var(--jira-border);
 }
 
-.jira-image-missing {
+.jira-media {
+  display: block;
+  max-width: 100%;
+  margin: 12px 0;
+  border-radius: 3px;
+}
+
+.jira-image-missing,
+.jira-media-missing {
   display: inline-block;
   padding: 1px 6px;
   border: 1px dashed var(--jira-border);

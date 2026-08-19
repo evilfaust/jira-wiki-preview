@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { baseUrlFor, dialectFor } from '../config.ts';
 import { highlightCode } from '../highlight.ts';
 import { renderJira } from '../parser/index.ts';
 
@@ -89,15 +90,12 @@ export class JiraPreview implements vscode.Disposable {
   private update(): void {
     if (this.disposed) return;
     const settings = this.settings();
-    const baseUrl = vscode.workspace
-      .getConfiguration('jira', this.document.uri)
-      .get<string>('baseUrl', '')
-      .trim();
 
     let html: string;
     try {
       html = renderJira(this.document.getText(), {
-        baseUrl: baseUrl || undefined,
+        dialect: dialectFor(this.document.uri),
+        baseUrl: baseUrlFor(this.document.uri),
         resolveImage: (src) => this.resolveImage(src),
         highlightCode: settings.highlightCode ? highlightCode : undefined,
       });
@@ -188,6 +186,7 @@ export class JiraPreview implements vscode.Disposable {
     const csp = [
       "default-src 'none'",
       `img-src ${webview.cspSource} https: data:`,
+      `media-src ${webview.cspSource} https: data:`,
       `style-src ${webview.cspSource} 'unsafe-inline'`,
       `font-src ${webview.cspSource}`,
       `script-src 'nonce-${nonce}'`,

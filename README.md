@@ -25,17 +25,44 @@ will render. Write the text, then paste it into Jira.
   `{code:java}`, `{code:sql}`, `{code:json}` and ~45 other languages.
 - **Formatting shortcuts**: `Ctrl+B` bold, `Ctrl+I` italic, `Ctrl+Shift+M` monospace,
   `Ctrl+Alt+K` link. Pressing again removes the formatting.
-- **Snippets** for the constructs you actually type: `h1`, `code`, `table`, `panel`,
-  `info`, `note`, `tip`, `warning`, `link`, `status`, and more.
+- **Markup diagnostics**: unclosed `{code}` or `{panel}`, a table row with the wrong
+  number of cells, a language `{code:…}` that Jira does not know, and macros that only
+  Confluence understands — each with a quick fix where one exists.
+- **Markdown conversion** in both directions, as a command or straight from the
+  clipboard: write in Markdown, paste into a Jira issue.
+- **Outline and folding**: headings show up in the Outline view and the breadcrumbs
+  (`Ctrl+Shift+O`), and `{code}`, `{panel}` and heading sections fold.
+- **Completion** for macro names, `{code:…}` languages, colors and emoticons, offering
+  only what the selected dialect actually renders.
+- **Table tools**: `Jira: Align Table Columns` lines up the pipes without changing what
+  Jira renders.
+- **Snippets** and **formatting shortcuts** for the constructs you actually type.
 - **Scratch document**: the `Jira: New Jira document` command opens an empty file with
   the preview already open — write, then copy into Jira.
 - **Issue links**: set `jira.baseUrl` and `ABC-123` / `[~user]` become clickable.
-- **Spell checking** for Russian and English that understands the markup: code blocks,
-  monospace, URLs, link targets, macro names and issue keys are skipped, so only prose
-  is checked. Quick fixes offer replacements and *add to dictionary*.
 
 The interface is English by default and switches to Russian when VS Code itself runs in
 Russian. Other languages are welcome — see [Contributing](#contributing).
+
+## Jira or Confluence
+
+Jira and Confluence share a markup family, but Jira knows far fewer macros. The
+*Text Formatting Notation Help* that every Jira serves at
+`/secure/WikiRendererHelpAction.jspa` — the page behind the **?** next to the description
+field — lists exactly three macros under *Advanced Formatting*: `{code}`, `{noformat}`
+and `{panel}`, plus `{quote}` and `{color}` among the text effects and `{anchor}` among
+the links.
+`{toc}`, `{info}`, `{note}`, `{tip}`, `{warning}`, `{status}`, `{section}`, `{column}`
+and `{excerpt}` are Confluence macros: Jira prints them as plain text.
+
+`jira.markup.dialect` decides which set the preview honours.
+
+- **`jira`** (default) renders only what Jira renders. A Confluence macro stays plain
+  text, exactly as it will look in the issue, and the linter says why.
+- **`confluence`** renders the Confluence macros too — useful if you keep drafts of
+  Confluence pages in `.jira` files.
+
+Tables marked *Confluence* below are only rendered in the `confluence` dialect.
 
 ## Supported syntax
 
@@ -67,7 +94,7 @@ Everything below is recognised by the editor's highlighting and rendered in the 
 | `??citation??` | citation |
 | `{{monospace}}` | `monospace` |
 | `{color:red}text{color}` | Coloured text; also accepts `#RRGGBB` |
-| `{status:colour=Green\|title=Done}` | Coloured status badge |
+| `{status:colour=Green\|title=Done}` | Coloured status badge — **Confluence** |
 
 ### Lists
 
@@ -103,9 +130,15 @@ can be used inside cells.
 | `{quote}` … `{quote}` | Block quote |
 | `bq. text` | Single-line quote |
 | `{panel:title=…}` … `{panel}` | Panel; also accepts `borderStyle`, `borderColor`, `borderWidth`, `bgColor`, `titleBGColor` |
-| `{info}`, `{note}`, `{tip}`, `{warning}` | Coloured message blocks, each accepting `title=` |
-| `{toc}` | Table of contents; accepts `minLevel`, `maxLevel`, `type=flat` |
 | `{anchor:name}` | Anchor to link to from elsewhere in the document |
+| `{info}`, `{note}`, `{tip}`, `{warning}` | Coloured message blocks — **Confluence** |
+| `{toc}` | Table of contents; `minLevel`, `maxLevel`, `type=flat` — **Confluence** |
+| `{section}`, `{column}`, `{excerpt}` | **Confluence** |
+
+`{code}` and `{noformat}` accept every optional parameter of `{panel}` — `title`,
+`bgColor`, `borderStyle`, `borderColor`, `borderWidth`, `titleBGColor` — as Jira's own
+help states. A coloured `{panel}` is also the closest thing Jira has to the Confluence
+message blocks, and the linter offers it as a quick fix.
 
 `{code}` and `{noformat}` also work inside a line — most often in a table cell, as in
 `| {code:java}$code = "sbp";{code} |`.
@@ -125,8 +158,11 @@ can be used inside cells.
 | `!image.png!` | Image |
 | `!image.png\|thumbnail!` | Thumbnail |
 | `!image.png\|width=300, align=right!` | Also accepts `height`, `border`, `vspace`, `hspace`, `alt`, `title` |
+| `!clip.mp4!`, `!song.mp3!` | Embedded player |
 
-Local image paths are resolved relative to the file being previewed.
+Local image paths are resolved relative to the file being previewed. Jira also embeds
+Flash, Real and Windows Media attachments; browsers no longer play those, so `.swf`,
+`.wmv`, `.wma`, `.rm` and `.ram` appear as a placeholder instead.
 
 ### Emoticons
 
@@ -163,20 +199,40 @@ what Jira draws.
 | `jira.preview.doubleClickToSwitchToEditor` | `true` | Double-click in preview jumps to the source line |
 | `jira.preview.highlightCode` | `true` | Syntax highlighting inside `{code:lang}` blocks |
 | `jira.baseUrl` | `""` | Your Jira base URL, e.g. `https://company.atlassian.net` |
-| `jira.spell.enabled` | `true` | Check spelling in Jira files |
-| `jira.spell.languages` | `["ru","en"]` | Languages to check; the alphabet of each word decides which dictionary is used |
-| `jira.spell.userWords` | `[]` | Words to always accept |
-| `jira.spell.minWordLength` | `3` | Skip words shorter than this |
-| `jira.spell.ignoreAllCaps` | `true` | Skip ALL-CAPS words — usually acronyms |
+| `jira.markup.dialect` | `jira` | Which constructs the preview renders — see [Jira or Confluence](#jira-or-confluence) |
+| `jira.lint.enabled` | `true` | Report markup Jira will render differently than intended |
+| `jira.paste.smart` | `true` | Offer a converted variant when pasting |
 
-### About the spell checker
+## Commands
 
-Dictionaries are hunspell dictionaries read through [nspell](https://github.com/wooorm/nspell).
-They run in a **helper process**, not in the extension host: the Russian dictionary needs
-roughly 250 MB of memory and about a second to build. The process starts on the first
-check and shuts itself down after five minutes of inactivity, so the cost is only paid
-while you are actually writing Jira text. Suggestions are computed lazily, when you open
-the quick-fix menu.
+All of them live under the **Jira** category in the command palette.
+
+| Command | Shortcut | What it does |
+| --- | --- | --- |
+| Open Preview to the Side | `Ctrl+Shift+V` | Preview pane next to the editor |
+| Bold / Italic / Monospace | `Ctrl+B` / `Ctrl+I` / `Ctrl+Shift+M` | Wraps the selection, or unwraps it |
+| Insert Link | `Ctrl+Alt+K` | `[text\|url]` around the selection |
+| Insert Code Block, Insert Table | | Snippet with tab stops |
+| Align Table Columns | | Lines up the pipes in the table under the cursor |
+| Paste as Jira Markup | `Ctrl+Alt+V` | Converts the clipboard from Markdown on the way in |
+| Convert from Markdown | | Converts the document, or the selection |
+| Convert to Markdown | | The other direction |
+| Copy as Markdown | | Puts the converted text on the clipboard |
+| New Jira Document (scratch) | | Empty file with the preview already open |
+| Copy Source to Clipboard | | The markup itself, unconverted |
+
+### Converting Markdown
+
+The converter handles headings, emphasis, inline and fenced code, links, images, lists
+with nesting, block quotes, tables and horizontal rules. Markdown constructs Jira has no
+equivalent for are left as they are rather than dropped.
+
+Going the other way loses what Markdown cannot express: `{color}` keeps the text and
+drops the colour, and `{panel}` becomes a block quote with a bold title.
+
+Plain `Ctrl+V` is untouched. When the clipboard holds a URL and you have text selected,
+or the clipboard looks like Markdown, the paste widget offers a converted variant next
+to the ordinary paste.
 
 ## File types
 
@@ -189,7 +245,7 @@ Grab the package from the [Releases](https://github.com/evilfaust/jira-wiki-prev
 page, then either use the Extensions view (`…` menu → **Install from VSIX…**) or run:
 
 ```bash
-code --install-extension jira-wiki-preview-0.4.0.vsix
+code --install-extension jira-wiki-preview-0.5.0.vsix
 ```
 
 ## Development
@@ -198,7 +254,7 @@ code --install-extension jira-wiki-preview-0.4.0.vsix
 npm install
 npm run compile      # bundle into dist/
 npm run watch        # rebuild on change
-npm test             # parser and highlighter tests
+npm test             # parser, linter, converter and structure tests
 npm run typecheck    # type checking
 npm run grammar      # regenerate the TextMate grammar
 npm run icon         # regenerate the extension icon
@@ -226,9 +282,6 @@ The tests in `test/l10n.test.ts` check that nothing is missing or orphaned.
 ## License
 
 [MIT](LICENSE).
-
-Bundled dictionaries keep their own licenses, shipped alongside them in
-`dictionaries/<lang>/license`: Russian — BSD-3-Clause, English — MIT and BSD.
 
 Jira is a trademark of Atlassian. This extension is an independent project and is not
 affiliated with, endorsed by, or sponsored by Atlassian.

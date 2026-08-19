@@ -2,7 +2,7 @@
   "name": "jira-wiki-preview",
   "displayName": "Jira Wiki Markup — Editor & Preview",
   "description": "%extension.description%",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "publisher": "evilfaust",
   "license": "MIT",
   "icon": "media/icons/icon.png",
@@ -19,7 +19,7 @@
     "url": "https://github.com/evilfaust/jira-wiki-preview/issues"
   },
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.97.0"
   },
   "categories": [
     "Programming Languages",
@@ -30,7 +30,8 @@
     "jira",
     "confluence",
     "wiki markup",
-    "preview"
+    "preview",
+    "markdown"
   ],
   "main": "./dist/extension.js",
   "l10n": "./l10n",
@@ -130,8 +131,33 @@
         "category": "%command.category%"
       },
       {
-        "command": "jira.spell.toggle",
-        "title": "%command.spell.toggle.title%",
+        "command": "jira.formatTable",
+        "title": "%command.formatTable.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "jira.pasteAsJira",
+        "title": "%command.pasteAsJira.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "jira.convertFromMarkdown",
+        "title": "%command.convertFromMarkdown.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "jira.convertToMarkdown",
+        "title": "%command.convertToMarkdown.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "jira.copyAsMarkdown",
+        "title": "%command.copyAsMarkdown.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "jira.useConfluenceDialect",
+        "title": "%command.useConfluenceDialect.title%",
         "category": "%command.category%"
       }
     ],
@@ -182,6 +208,30 @@
         {
           "command": "jira.copySource",
           "when": "editorLangId == jira"
+        },
+        {
+          "command": "jira.formatTable",
+          "when": "editorLangId == jira"
+        },
+        {
+          "command": "jira.pasteAsJira",
+          "when": "editorLangId == jira"
+        },
+        {
+          "command": "jira.convertFromMarkdown",
+          "when": "editorLangId == jira"
+        },
+        {
+          "command": "jira.convertToMarkdown",
+          "when": "editorLangId == jira"
+        },
+        {
+          "command": "jira.copyAsMarkdown",
+          "when": "editorLangId == jira"
+        },
+        {
+          "command": "jira.useConfluenceDialect",
+          "when": "false"
         }
       ]
     },
@@ -215,11 +265,40 @@
         "key": "ctrl+alt+k",
         "mac": "cmd+alt+k",
         "when": "editorTextFocus && editorLangId == jira"
+      },
+      {
+        "command": "jira.pasteAsJira",
+        "key": "ctrl+alt+v",
+        "mac": "cmd+alt+v",
+        "when": "editorTextFocus && editorLangId == jira"
       }
     ],
     "configuration": {
       "title": "%configuration.title%",
       "properties": {
+        "jira.markup.dialect": {
+          "type": "string",
+          "enum": [
+            "jira",
+            "confluence"
+          ],
+          "enumDescriptions": [
+            "%configuration.markup.dialect.enum0%",
+            "%configuration.markup.dialect.enum1%"
+          ],
+          "default": "jira",
+          "description": "%configuration.markup.dialect.description%"
+        },
+        "jira.lint.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.lint.enabled.description%"
+        },
+        "jira.paste.smart": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.paste.smart.description%"
+        },
         "jira.preview.theme": {
           "type": "string",
           "enum": [
@@ -270,47 +349,6 @@
           "default": true,
           "description": "%configuration.preview.highlightCode.description%"
         },
-        "jira.spell.enabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "%configuration.spell.enabled.description%"
-        },
-        "jira.spell.languages": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": [
-              "ru",
-              "en"
-            ]
-          },
-          "default": [
-            "ru",
-            "en"
-          ],
-          "uniqueItems": true,
-          "description": "%configuration.spell.languages.description%"
-        },
-        "jira.spell.userWords": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [],
-          "description": "%configuration.spell.userWords.description%"
-        },
-        "jira.spell.minWordLength": {
-          "type": "number",
-          "default": 3,
-          "minimum": 1,
-          "maximum": 10,
-          "description": "%configuration.spell.minWordLength.description%"
-        },
-        "jira.spell.ignoreAllCaps": {
-          "type": "boolean",
-          "default": true,
-          "description": "%configuration.spell.ignoreAllCaps.description%"
-        },
         "jira.baseUrl": {
           "type": "string",
           "default": "",
@@ -333,16 +371,12 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
-    "@types/nspell": "^2.1.6",
-    "@types/vscode": "^1.85.0",
+    "@types/vscode": "^1.97.0",
     "@vscode/vsce": "^3.2.0",
     "esbuild": "^0.24.0",
     "typescript": "^5.7.0"
   },
   "dependencies": {
-    "dictionary-en": "^4.0.0",
-    "dictionary-ru": "^3.0.0",
-    "highlight.js": "^11.11.1",
-    "nspell": "^2.1.5"
+    "highlight.js": "^11.11.1"
   }
 }

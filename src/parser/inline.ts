@@ -1,3 +1,4 @@
+import { normalizeDialect } from './dialect.ts';
 import { EMOTICON_ICONS } from './emoticons.ts';
 import type { InlineMatch, RenderOptions } from './types.ts';
 
@@ -49,6 +50,10 @@ const EMOTICON_KEYS = [...Object.keys(EMOTICON_ICONS), ...Object.keys(EMOTICON_S
 const URL_SCHEME_RE = /^(https?|ftp|ftps|file|mailto|tel):/i;
 const ISSUE_KEY_RE = /^[A-Za-z][A-Za-z0-9]*-\d+$/;
 const IMAGE_EXT_RE = /\.(png|jpe?g|gif|svg|webp|bmp|ico|avif)$/i;
+const VIDEO_EXT_RE = /\.(mp4|m4v|mov|webm|ogv)$/i;
+const AUDIO_EXT_RE = /\.(mp3|m4a|wav|ogg|oga|flac)$/i;
+/** Форматы, для которых Jira рисовала плеер, а современный браузер — уже нет. */
+const LEGACY_MEDIA_EXT_RE = /\.(swf|wma|wmv|rm|ram)$/i;
 
 function trimTrailingSlash(url: string): string {
   return url.replace(/\/+$/, '');
@@ -338,7 +343,8 @@ function tryMacro(src: string, i: number, opts: RenderOptions): InlineMatch | nu
     };
   }
 
-  if (name === 'status') {
+  // {status} — макрос Confluence: в Jira он остаётся текстом.
+  if (name === 'status' && normalizeDialect(opts.dialect) === 'confluence') {
     const parsed = parseParams(params);
     const colour = (parsed.colour ?? parsed.color ?? 'grey').toLowerCase();
     const title = parsed.title ?? parsed._ ?? colour;
@@ -419,19 +425,29 @@ function resolveHref(target: string, opts: RenderOptions): string | null {
   return null;
 }
 
-function tryImage(src: string, i: number, opts: RenderOptions): InlineMatch | null {
-  const match = /^!([^!\n|]+?)(?:\|([^!\n]*))?!/.exec(src.slice(i));
-  if (!match) return null;
+type MediaKind = 'video' | 'audio' | 'legacy';
 
-  const source = match[1].trim();
-  const looksLikeImage = IMAGE_EXT_RE.test(source) || /^(https?:\/\/|data:image\/)/i.test(source);
-  if (!looksLikeImage) return null;
+/** Определяет, что за вложение указано в `!имя!`: плеер или картинка. */
+function mediaKind(source: string): MediaKind | null {
+  if (VIDEO_EXT_RE.test(source)) return 'video';
+  if (AUDIO_EXT_RE.test(source)) return 'audio';
+  if (LEGACY_MEDIA_EXT_RE.test(source)) return 'legacy';
+  return null;
+}
 
+interface ImageParams {
+  styles: string[];
+  attrs: string[];
+  classes: string[];
+}
+
+/** Разбирает `width=300, height=400, align=right, thumbnail` из `!файл|…!`. */
+function parseImageParams(raw: string): ImageParams {
   const styles: string[] = [];
   const attrs: string[] = [];
-  const classes = ['jira-image'];
+  const classes: string[] = [];
 
-  for (const chunk of (match[2] ?? '').split(',')) {
+  for (const chunk of raw.split(',')) {
     const part = chunk.trim();
     if (!part) continue;
     const eq = part.indexOf('=');
@@ -468,18 +484,51 @@ function tryImage(src: string, i: number, opts: RenderOptions): InlineMatch | nu
     }
   }
 
+  return { styles, attrs, classes };
+}
+
+/** Заглушка для вложения, которое показать нельзя. */
+function missingMedia(cls: string, icon: string, source: string): string {
+  return `<span class="${cls}" title="${escapeHtml(source)}">${icon} ${escapeHtml(source)}</span>`;
+}
+
+function tryImage(src: string, i: number, opts: RenderOptions): InlineMatch | null {
+  const match = /^!([^!\n|]+?)(?:\|([^!\n]*))?!/.exec(src.slice(i));
+  if (!match) return null;
+
+  const source = match[1].trim();
+  const kind = mediaKind(source);
+  const looksLikeImage = IMAGE_EXT_RE.test(source) || /^(https?:\/\/|data:image\/)/i.test(source);
+  if (!kind && !looksLikeImage) return null;
+
+  const length = match[0].length;
+  const { styles, attrs, classes } = parseImageParams(match[2] ?? '');
+  const styleAttr = styles.length ? ` style="${escapeHtml(styles.join(';'))}"` : '';
+  const attrsStr = attrs.length ? ` ${attrs.join(' ')}` : '';
+
+  // Flash, Real и Windows Media Jira встраивала плеером, но браузер их
+  // уже не проигрывает — показываем ссылку на вложение, а не пустоту.
+  if (kind === 'legacy') {
+    return { html: missingMedia('jira-media-missing', '🎬', source), length };
+  }
+
   const resolved = opts.resolveImage ? opts.resolveImage(source) : source;
   if (!resolved) {
+    return kind
+      ? { html: missingMedia('jira-media-missing', '🎬', source), length }
+      : { html: missingMedia('jira-image-missing', '🖼', source), length };
+  }
+
+  if (kind) {
+    const tag = kind === 'video' ? 'video' : 'audio';
     return {
-      html: `<span class="jira-image-missing" title="${escapeHtml(source)}">🖼 ${escapeHtml(source)}</span>`,
-      length: match[0].length,
+      html: `<${tag} class="jira-media" controls preload="metadata" src="${escapeHtml(resolved)}"${styleAttr}${attrsStr}></${tag}>`,
+      length,
     };
   }
 
-  const styleAttr = styles.length ? ` style="${escapeHtml(styles.join(';'))}"` : '';
-  const attrsStr = attrs.length ? ` ${attrs.join(' ')}` : '';
   return {
-    html: `<img class="${classes.join(' ')}" src="${escapeHtml(resolved)}"${styleAttr}${attrsStr}/>`,
-    length: match[0].length,
+    html: `<img class="${['jira-image', ...classes].join(' ')}" src="${escapeHtml(resolved)}"${styleAttr}${attrsStr}/>`,
+    length,
   };
 }

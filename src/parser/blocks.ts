@@ -1,4 +1,11 @@
+import {
+  type Dialect,
+  isBlockMacro,
+  isStandaloneMacro,
+  normalizeDialect,
+} from './dialect.ts';
 import { escapeHtml, parseParams, renderInline, sanitizeColor } from './inline.ts';
+import { TABLE_LINE_RE, type TableCell, parseTableRow } from './table.ts';
 import type { RenderOptions } from './types.ts';
 
 const HEADING_RE = /^\s*h([1-6])\.\s*(.*)$/i;
@@ -6,23 +13,7 @@ const TOC_RE = /^\s*\{toc(?::([^}\n]*))?\}\s*$/i;
 const HR_RE = /^\s*-{4,}\s*$/;
 const BQ_RE = /^\s*bq\.\s?(.*)$/i;
 const LIST_RE = /^(\s*)([*#-]+)\s+(.*)$/;
-const TABLE_RE = /^\s*\|/;
 const MACRO_RE = /^\s*\{([a-zA-Z]+)(?::([^}\n]*))?\}(.*)$/;
-
-const BLOCK_MACROS = new Set([
-  'code',
-  'noformat',
-  'panel',
-  'quote',
-  'color',
-  'tip',
-  'note',
-  'info',
-  'warning',
-  'excerpt',
-  'section',
-  'column',
-]);
 
 const MESSAGE_ICONS: Record<string, string> = {
   info: 'ℹ️',
@@ -66,7 +57,8 @@ export function renderJira(source: string, opts: RenderOptions = {}): string {
   // Метки оглавления строятся на NUL, поэтому в тексте его быть не должно.
   const lines = source.replace(/\0/g, '').split(/\r\n|\r|\n/);
   const context: RenderContext = { headings: [], tocs: [], usedIds: new Set() };
-  const html = renderBlocks(lines, 0, opts, context);
+  const options: RenderOptions = { ...opts, dialect: normalizeDialect(opts.dialect) };
+  const html = renderBlocks(lines, 0, options, context);
   return context.tocs.length ? substituteTocs(html, context) : html;
 }
 
@@ -77,6 +69,7 @@ function renderBlocks(
   context: RenderContext,
 ): string {
   const out: string[] = [];
+  const dialect = normalizeDialect(opts.dialect);
   let i = 0;
 
   while (i < lines.length) {
@@ -88,7 +81,7 @@ function renderBlocks(
       continue;
     }
 
-    const macro = matchBlockMacro(line);
+    const macro = matchBlockMacro(line, dialect);
     if (macro) {
       if (macro.inlineBody !== null) {
         out.push(
@@ -127,7 +120,7 @@ function renderBlocks(
       continue;
     }
 
-    const toc = TOC_RE.exec(line);
+    const toc = isStandaloneMacro('toc', dialect) ? TOC_RE.exec(line) : null;
     if (toc) {
       out.push(tocMark(context.tocs.length));
       context.tocs.push({ params: toc[1] ?? '', line: lineNumber });
@@ -150,10 +143,10 @@ function renderBlocks(
       continue;
     }
 
-    if (TABLE_RE.test(line)) {
+    if (TABLE_LINE_RE.test(line)) {
       const rows: TableRow[] = [];
       let j = i;
-      while (j < lines.length && TABLE_RE.test(lines[j])) {
+      while (j < lines.length && TABLE_LINE_RE.test(lines[j])) {
         const cells = parseTableRow(lines[j]);
         if (!cells.length) break;
         rows.push({ cells, line: offset + j });
@@ -182,7 +175,7 @@ function renderBlocks(
 
     const paragraph: ParagraphLine[] = [{ text: line, line: lineNumber }];
     i += 1;
-    while (i < lines.length && lines[i].trim() && !startsBlock(lines[i])) {
+    while (i < lines.length && lines[i].trim() && !startsBlock(lines[i], dialect)) {
       paragraph.push({ text: lines[i], line: offset + i });
       i += 1;
     }
@@ -192,23 +185,23 @@ function renderBlocks(
   return out.join('\n');
 }
 
-function startsBlock(line: string): boolean {
+function startsBlock(line: string, dialect: Dialect): boolean {
   return (
     HEADING_RE.test(line) ||
     HR_RE.test(line) ||
     BQ_RE.test(line) ||
     LIST_RE.test(line) ||
-    TABLE_RE.test(line) ||
-    TOC_RE.test(line) ||
-    matchBlockMacro(line) !== null
+    TABLE_LINE_RE.test(line) ||
+    (isStandaloneMacro('toc', dialect) && TOC_RE.test(line)) ||
+    matchBlockMacro(line, dialect) !== null
   );
 }
 
-function matchBlockMacro(line: string): MacroLine | null {
+function matchBlockMacro(line: string, dialect: Dialect): MacroLine | null {
   const match = MACRO_RE.exec(line);
   if (!match) return null;
   const name = match[1].toLowerCase();
-  if (!BLOCK_MACROS.has(name)) return null;
+  if (!isBlockMacro(name, dialect)) return null;
 
   const rest = match[3] ?? '';
   const closeTag = `{${name}}`;
@@ -236,7 +229,12 @@ function renderMacro(
   if (name === 'code' || name === 'noformat') {
     const language = name === 'code' ? (parsed.language ?? parsed._ ?? '') : '';
     const languageClass = /^[\w+#.-]+$/.test(language) ? ` language-${language.toLowerCase()}` : '';
-    const title = parsed.title ? `<div class="jira-code-title">${escapeHtml(parsed.title)}</div>` : '';
+    // Справка Jira: все необязательные параметры {panel} действительны
+    // и для {code}, и для {noformat}.
+    const styles = panelStyles(parsed);
+    const title = parsed.title
+      ? `<div class="jira-code-title"${styleAttr(styles.title)}>${escapeHtml(parsed.title)}</div>`
+      : '';
 
     const raw = trimBlankEdges(body).join('\n');
     const highlighted = language && opts.highlightCode ? opts.highlightCode(raw, language) : null;
@@ -244,7 +242,7 @@ function renderMacro(
     const contentClass = `jira-code-content${languageClass}${highlighted === null ? '' : ' hljs'}`;
 
     return (
-      `<div class="jira-code"${anchor}>${title}` +
+      `<div class="jira-code"${anchor}${styleAttr(styles.body)}>${title}` +
       `<pre class="jira-code-body"><code class="${contentClass}">${content}</code></pre></div>`
     );
   }
@@ -252,21 +250,11 @@ function renderMacro(
   const inner = renderBlocks(body, bodyOffset, opts, context);
 
   if (name === 'panel') {
-    const bodyStyles: string[] = [];
-    const titleStyles: string[] = [];
-    if (parsed.bgcolor) bodyStyles.push(`background-color:${sanitizeColor(parsed.bgcolor)}`);
-    if (parsed.bordercolor) bodyStyles.push(`border-color:${sanitizeColor(parsed.bordercolor)}`);
-    if (parsed.borderstyle && BORDER_STYLES.has(parsed.borderstyle.toLowerCase())) {
-      bodyStyles.push(`border-style:${parsed.borderstyle.toLowerCase()}`);
-    }
-    if (parsed.borderwidth && /^\d+$/.test(parsed.borderwidth)) {
-      bodyStyles.push(`border-width:${parsed.borderwidth}px`);
-    }
-    if (parsed.titlebgcolor) titleStyles.push(`background-color:${sanitizeColor(parsed.titlebgcolor)}`);
+    const styles = panelStyles(parsed);
     const title = parsed.title
-      ? `<div class="jira-panel-title"${styleAttr(titleStyles)}>${renderInline(parsed.title, opts)}</div>`
+      ? `<div class="jira-panel-title"${styleAttr(styles.title)}>${renderInline(parsed.title, opts)}</div>`
       : '';
-    return `<div class="jira-panel"${anchor}${styleAttr(bodyStyles)}>${title}<div class="jira-panel-body">${inner}</div></div>`;
+    return `<div class="jira-panel"${anchor}${styleAttr(styles.body)}>${title}<div class="jira-panel-body">${inner}</div></div>`;
   }
 
   if (name === 'quote') {
@@ -289,6 +277,26 @@ function renderMacro(
   }
 
   return `<div class="jira-${name}"${anchor}>${inner}</div>`;
+}
+
+/**
+ * Оформление из параметров {panel}: bgColor, borderColor, borderStyle,
+ * borderWidth, titleBGColor. Живёт отдельно, потому что те же параметры
+ * принимают {code} и {noformat}.
+ */
+function panelStyles(parsed: Record<string, string>): { body: string[]; title: string[] } {
+  const body: string[] = [];
+  const title: string[] = [];
+  if (parsed.bgcolor) body.push(`background-color:${sanitizeColor(parsed.bgcolor)}`);
+  if (parsed.bordercolor) body.push(`border-color:${sanitizeColor(parsed.bordercolor)}`);
+  if (parsed.borderstyle && BORDER_STYLES.has(parsed.borderstyle.toLowerCase())) {
+    body.push(`border-style:${parsed.borderstyle.toLowerCase()}`);
+  }
+  if (parsed.borderwidth && /^\d+$/.test(parsed.borderwidth)) {
+    body.push(`border-width:${parsed.borderwidth}px`);
+  }
+  if (parsed.titlebgcolor) title.push(`background-color:${sanitizeColor(parsed.titlebgcolor)}`);
+  return { body, title };
 }
 
 function styleAttr(styles: string[]): string {
@@ -414,55 +422,9 @@ function renderParagraph(lines: ParagraphLine[], opts: RenderOptions): string {
   return `<p data-line="${lines[0].line}">${inner}</p>`;
 }
 
-interface TableCell {
-  text: string;
-  header: boolean;
-}
-
 interface TableRow {
   cells: TableCell[];
   line: number;
-}
-
-/** Разбирает `||h1||h2||` и `|a|b|`; `|` внутри [] и {} разделителем не считается. */
-function parseTableRow(line: string): TableCell[] {
-  const text = line.trim();
-  if (!text.startsWith('|')) return [];
-
-  const cells: TableCell[] = [];
-  let i = 0;
-  while (i < text.length) {
-    let header = false;
-    if (text.startsWith('||', i)) {
-      header = true;
-      i += 2;
-    } else if (text[i] === '|') {
-      i += 1;
-    } else {
-      break;
-    }
-
-    const start = i;
-    let depthSquare = 0;
-    let depthCurly = 0;
-    while (i < text.length) {
-      const ch = text[i];
-      if (ch === '\\') {
-        i += 2;
-        continue;
-      }
-      if (ch === '[') depthSquare += 1;
-      else if (ch === ']') depthSquare = Math.max(0, depthSquare - 1);
-      else if (ch === '{') depthCurly += 1;
-      else if (ch === '}') depthCurly = Math.max(0, depthCurly - 1);
-      else if (ch === '|' && depthSquare === 0 && depthCurly === 0) break;
-      i += 1;
-    }
-    const content = text.slice(start, Math.min(i, text.length));
-    if (i >= text.length && !content.trim()) break; // хвостовой разделитель
-    cells.push({ text: content, header });
-  }
-  return cells;
 }
 
 function renderTable(rows: TableRow[], blockLine: number, opts: RenderOptions): string {

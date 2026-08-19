@@ -3,6 +3,8 @@ import { test } from 'node:test';
 import { renderJira } from '../src/parser/index.ts';
 
 const render = (source: string) => renderJira(source);
+/** Разметка Confluence отрисовывается только в одноимённом диалекте. */
+const renderConfluence = (source: string) => renderJira(source, { dialect: 'confluence' });
 
 test('заголовки', () => {
   assert.match(render('h1. Привет'), /<h1 data-line="0" id="привет">Привет<\/h1>/);
@@ -187,10 +189,13 @@ test('панель с заголовком', () => {
   assert.match(html, /<div class="jira-panel-body"><p[^>]*><span[^>]*>текст<\/span><\/p><\/div>/);
 });
 
-test('макросы-сообщения', () => {
-  assert.match(render('{note}\nтекст\n{note}'), /class="jira-msg jira-msg-note"/);
-  assert.match(render('{warning}\nтекст\n{warning}'), /class="jira-msg jira-msg-warning"/);
-  assert.match(render('{info:title=Инфо}\nтекст\n{info}'), /<div class="jira-msg-title">Инфо<\/div>/);
+test('макросы-сообщения в диалекте Confluence', () => {
+  assert.match(renderConfluence('{note}\nтекст\n{note}'), /class="jira-msg jira-msg-note"/);
+  assert.match(renderConfluence('{warning}\nтекст\n{warning}'), /class="jira-msg jira-msg-warning"/);
+  assert.match(
+    renderConfluence('{info:title=Инфо}\nтекст\n{info}'),
+    /<div class="jira-msg-title">Инфо<\/div>/,
+  );
 });
 
 test('цитаты', () => {
@@ -294,7 +299,7 @@ test('эмотиконы: синонимы и границы слова', () => 
 });
 
 test('оглавление {toc}', () => {
-  const html = render('{toc}\n\nh1. Первый\n\nh2. Вложенный\n\nh1. Второй');
+  const html = renderConfluence('{toc}\n\nh1. Первый\n\nh2. Вложенный\n\nh1. Второй');
   assert.match(html, /<div class="jira-toc" data-line="0">/);
   assert.match(html, /<a href="#первый">Первый<\/a><ul class="jira-toc-list"><li><a href="#вложенный">/);
   // Оглавление стоит выше заголовков, но собирает их все.
@@ -302,15 +307,18 @@ test('оглавление {toc}', () => {
 });
 
 test('{toc} с параметрами', () => {
-  assert.match(render('{toc:type=flat}\n\nh1. А\n\nh2. Б'), /class="jira-toc jira-toc-flat"/);
-  const levels = render('{toc:minLevel=2|maxLevel=2}\n\nh1. А\n\nh2. Б\n\nh3. В');
+  assert.match(
+    renderConfluence('{toc:type=flat}\n\nh1. А\n\nh2. Б'),
+    /class="jira-toc jira-toc-flat"/,
+  );
+  const levels = renderConfluence('{toc:minLevel=2|maxLevel=2}\n\nh1. А\n\nh2. Б\n\nh3. В');
   assert.match(levels, /href="#б"/);
   assert.doesNotMatch(levels, /href="#а"/);
   assert.doesNotMatch(levels, /href="#в"/);
 });
 
 test('{toc} без заголовков не ломается', () => {
-  assert.match(render('{toc}'), /class="jira-toc jira-toc-empty"/);
+  assert.match(renderConfluence('{toc}'), /class="jira-toc jira-toc-empty"/);
 });
 
 test('одинаковые заголовки получают разные якоря', () => {
@@ -332,4 +340,69 @@ test('пустой документ', () => {
 test('незакрытый макрос не роняет парсер', () => {
   assert.match(render('{code:java}\nx = 1'), /jira-code/);
   assert.match(render('{panel:title=A}\nтекст'), /jira-panel/);
+});
+
+test('диалект jira не отрисовывает макросы Confluence', () => {
+  // Jira печатает незнакомый макрос как есть — превью обязано делать так же.
+  for (const macro of ['info', 'note', 'tip', 'warning', 'excerpt', 'section', 'column']) {
+    const html = render(`{${macro}}\nтекст\n{${macro}}`);
+    assert.doesNotMatch(html, /jira-msg|jira-excerpt|jira-section|jira-column/);
+    assert.match(html, new RegExp(`\\{${macro}\\}`));
+  }
+});
+
+test('диалект jira оставляет {toc} и {status} текстом', () => {
+  const toc = render('{toc}\n\nh1. Заголовок');
+  assert.doesNotMatch(toc, /jira-toc/);
+  assert.match(toc, /\{toc\}/);
+
+  const status = render('Готово: {status:colour=Green|title=OK}');
+  assert.doesNotMatch(status, /jira-status/);
+  assert.match(status, /\{status:colour=Green\|title=OK\}/);
+});
+
+test('{toc} в диалекте jira не разрывает абзац', () => {
+  const html = render('первая строка\n{toc}\nвторая строка');
+  assert.equal(html.match(/<p /g)?.length, 1);
+});
+
+test('{status} отрисовывается в диалекте Confluence', () => {
+  assert.match(
+    renderConfluence('{status:colour=Green|title=Готово}'),
+    /<span class="jira-status jira-status-green">Готово<\/span>/,
+  );
+});
+
+test('{code} и {noformat} принимают параметры {panel}', () => {
+  // Справка Jira: все необязательные параметры {panel} валидны и для них.
+  assert.match(
+    render('{noformat:title=Вывод|bgColor=#eee}\nтекст\n{noformat}'),
+    /<div class="jira-code-title"[^>]*>Вывод<\/div>/,
+  );
+  assert.match(
+    render('{noformat:bgColor=#eeeeee}\nтекст\n{noformat}'),
+    /<div class="jira-code" data-line="0" style="background-color:#eeeeee"/,
+  );
+  assert.match(
+    render('{code:java|borderStyle=dashed}\nint x;\n{code}'),
+    /style="border-style:dashed"/,
+  );
+});
+
+test('встроенное медиа', () => {
+  assert.match(
+    render('!demo.mp4!'),
+    /<video class="jira-media" controls preload="metadata" src="demo\.mp4"><\/video>/,
+  );
+  assert.match(render('!song.mp3!'), /<audio class="jira-media"[^>]*src="song\.mp3"/);
+  assert.match(render('!clip.mov|width=300,height=200!'), /<video[^>]*style="width:300px;height:200px"/);
+  // Flash и Windows Media браузер не проиграет — показываем заглушку, а не пустоту.
+  assert.match(render('!banner.swf!'), /<span class="jira-media-missing"[^>]*>🎬 banner\.swf<\/span>/);
+  assert.match(render('!old.wmv!'), /jira-media-missing/);
+});
+
+test('картинки по-прежнему картинки', () => {
+  assert.match(render('!schema.png!'), /<img class="jira-image" src="schema\.png"\/>/);
+  assert.match(render('!schema.png|thumbnail!'), /class="jira-image jira-thumbnail"/);
+  assert.doesNotMatch(render('!не картинка!'), /<img|<video|<audio/);
 });
